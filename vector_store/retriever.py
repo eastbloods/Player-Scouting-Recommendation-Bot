@@ -7,10 +7,18 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-Settings.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
+_embed_model = None
+
+
+def get_embed_model():
+    global _embed_model
+    if _embed_model is None:
+        _embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    return _embed_model
 
 
 def qdrant_retriever(query_string, filters=None):
+    Settings.embed_model = get_embed_model()
     result_stack = []
     client = QdrantClient(url=os.getenv('QDRANT_URL'))
     vector_store = QdrantVectorStore(
