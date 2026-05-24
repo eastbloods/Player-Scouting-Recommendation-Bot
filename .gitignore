@@ -1,6 +1,7 @@
 .env
-/moneyball-ilk-deneme-py-dosyası.md
 __pycache__/
 *.pyc
 *.db
 .idea/
+redis-data
+venv/
