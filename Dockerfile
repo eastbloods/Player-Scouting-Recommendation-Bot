@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r requirements.txt
 
 COPY . .
