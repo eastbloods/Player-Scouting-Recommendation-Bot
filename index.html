@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goat Scout | AI Football Player Scouting</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-card: #111827;
+      --bg-input: #1a2035;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --accent-glow: rgba(34, 197, 94, 0.15);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --border: #1e293b;
+      --border-accent: rgba(34, 197, 94, 0.3);
+      --font-family: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .header-logo { display: flex; flex-direction: column; }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .header-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s ease;
+    }
+
+    .header-links a:hover { color: var(--accent); }
+
+    main {
+      flex: 1;
+      padding: 3rem 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .search-area {
+      max-width: 680px;
+      margin: 0 auto 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .input-wrapper { position: relative; width: 100%; }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+    }
+
+    #search-input {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 1rem 1rem 1rem 3rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #search-input:focus {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    #search-input::placeholder { color: var(--text-muted); }
+
+    #scout-button {
+      width: 100%;
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #scout-button:hover:not(:disabled) {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    #scout-button:disabled {
+      background-color: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .chips-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .chip {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    .results-container { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .results-header {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .player-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      animation: fadeInUp 0.5s ease backwards;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .player-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .player-header {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .player-details { font-size: 0.875rem; color: var(--text-secondary); }
+
+    .player-divider {
+      height: 1px;
+      background-color: var(--border);
+      margin: 0.25rem 0;
+    }
+
+    .player-club-info {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 3rem 0;
+    }
+
+    .empty-state .emoji { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+    .error-state {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      color: #fca5a5;
+    }
+
+    .skeleton-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      animation: pulse 1.5s infinite;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .skeleton-line {
+      height: 1rem;
+      background-color: var(--border);
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    .skeleton-line.short { width: 60%; }
+    .skeleton-line.medium { width: 80%; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: inherit; text-decoration: none; }
+    footer a:hover { color: var(--text-secondary); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%      { opacity: 0.8; }
+    }
+
+    @media (max-width: 900px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) {
+      .results-grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-logo">
+      <div class="header-title">⚽ Goat Scout</div>
+      <div class="header-subtitle">AI-Powered Football Player Scouting</div>
+    </div>
+    <div class="header-links">
+      <a href="https://goatscout.space/docs" target="_blank" rel="noopener noreferrer">API Docs ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="search-area">
+      <div class="input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="e.g. find a young left-back under 23 in the Premier League">
+      </div>
+      <button id="scout-button">⚡ Scout Players</button>
+    </div>
+
+    <div class="chips-area" id="chips-container"></div>
+
+    <div id="content-area">
+      <div id="empty-state" class="empty-state">
+        <span class="emoji">⚽</span>
+        <h2>Start scouting.</h2>
+        <p>Type a query above or pick an example.</p>
+      </div>
+
+      <div id="error-state" class="error-state hidden">
+        <h3 style="margin-bottom: 0.5rem;">⚠️ Something went wrong</h3>
+        <p>The API might be warming up or unavailable. Try again in a few seconds.</p>
+      </div>
+
+      <div id="loading-state" class="results-grid hidden">
+        <div class="skeleton-card">
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+
+      <div id="results-container" class="results-container hidden">
+        <div id="results-header" class="results-header"></div>
+        <div id="results-grid" class="results-grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Built with Qdrant · LlamaIndex · LangChain · Groq · FastAPI <br>
+    <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener noreferrer" style="margin-top: 0.5rem; display: inline-block;">View on GitHub</a>
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const scoutBtn = document.getElementById('scout-button');
+    const chipsContainer = document.getElementById('chips-container');
+    const emptyState = document.getElementById('empty-state');
+    const errorState = document.getElementById('error-state');
+    const loadingState = document.getElementById('loading-state');
+    const resultsContainer = document.getElementById('results-container');
+    const resultsGrid = document.getElementById('results-grid');
+    const resultsHeader = document.getElementById('results-header');
+
+    const exampleQueries = [
+      "young defender under 25",
+      "tall striker over 190cm",
+      "goalkeeper under 22",
+      "French winger top league",
+      "experienced centre-back over 30",
+      "fast right-back"
+    ];
+
+    function renderChips() {
+      exampleQueries.forEach(query => {
+        const btn = document.createElement('button');
+        btn.className = 'chip';
+        btn.textContent = query;
+        btn.onclick = () => { searchInput.value = query; handleSearch(); };
+        chipsContainer.appendChild(btn);
+      });
+    }
+
+    function showState(stateName) {
+      emptyState.classList.add('hidden');
+      errorState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+      resultsContainer.classList.add('hidden');
+      if (stateName === 'empty') emptyState.classList.remove('hidden');
+      if (stateName === 'error') errorState.classList.remove('hidden');
+      if (stateName === 'loading') loadingState.classList.remove('hidden');
+      if (stateName === 'results') resultsContainer.classList.remove('hidden');
+    }
+
+    function setButtonLoading(isLoading) {
+      if (isLoading) {
+        scoutBtn.disabled = true;
+        scoutBtn.innerHTML = '⚡ Analyzing...';
+      } else {
+        scoutBtn.disabled = false;
+        scoutBtn.innerHTML = '⚡ Scout Players';
+      }
+    }
+
+    async function searchPlayers(query) {
+      const response = await fetch('https://goatscout.space/search/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: query })
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      return data.text;
+    }
+
+    function parsePlayerLine(line) {
+      const regex = /^-\s+(.+?)\s+[–-]\s+(.+)$/;
+      const match = line.match(regex);
+      if (!match) return null;
+
+      const name = match[1].trim();
+      const parts = match[2].trim().split(',').map(p => p.trim());
+
+      let age = parts[0] || 'Unknown age';
+      let height = 'N/A';
+      let position = '';
+      let clubLeague = '';
+
+      if (parts.length > 1 && parts[1].includes('cm')) {
+        height = parts[1];
+        position = parts[2] || '';
+        clubLeague = parts.slice(3).join(', ');
+      } else {
+        position = parts[1] || '';
+        clubLeague = parts.slice(2).join(', ');
+      }
+
+      return { name, age, height, position, clubLeague };
+    }
+
+    function renderResults(rawText, originalQuery) {
+      resultsGrid.innerHTML = '';
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.startsWith('-'));
+      const validPlayers = [];
+
+      lines.forEach((line, index) => {
+        const player = parsePlayerLine(line);
+        if (!player) return;
+        validPlayers.push(player);
+
+        const clubName = player.clubLeague.split('(')[0].trim() || 'Unknown Club';
+        const leagueMatch = player.clubLeague.match(/\((.+)\)/);
+        const leagueName = leagueMatch ? leagueMatch[1] : '';
+
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.style.animationDelay = `${index * 0.08}s`;
+        card.innerHTML = `
+          <div class="player-header">🧤 ${player.name}</div>
+          <div class="player-details">
+            ${player.age}${player.height !== 'N/A' ? ' · ' + player.height : ''}<br>
+            ${player.position}
+          </div>
+          <div class="player-divider"></div>
+          <div class="player-club-info">
+            <span>🏟️ ${clubName}</span>
+            ${leagueName ? `<span>🏆 ${leagueName}</span>` : ''}
+          </div>
+        `;
+        resultsGrid.appendChild(card);
+      });
+
+      resultsHeader.innerHTML = `✅ ${validPlayers.length} player${validPlayers.length !== 1 ? 's' : ''} found for "<em>${originalQuery}</em>"`;
+      if (validPlayers.length === 0) {
+        resultsHeader.innerHTML = `⚠️ No players parsed. Try a different query.`;
+      }
+    }
+
+    async function handleSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+      setButtonLoading(true);
+      showState('loading');
+      try {
+        const rawText = await searchPlayers(query);
+        renderResults(rawText, query);
+        showState('results');
+      } catch (err) {
+        showState('error');
+      } finally {
+        setButtonLoading(false);
+      }
+    }
+
+    scoutBtn.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keyup', e => { if (e.key === 'Enter') handleSearch(); });
+
+    renderChips();
+  </script>
+</body>
+</html>
