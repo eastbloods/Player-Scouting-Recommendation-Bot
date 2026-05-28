@@ -431,33 +431,36 @@
     }
 
     function parsePlayerLine(line) {
-      const regex = /^-\s+(.+?)\s+[–-]\s+(.+)$/;
-      const match = line.match(regex);
-      if (!match) return null;
+        // Strip leading "- " or "* " bullet if present
+        const cleaned = line.replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim();
 
-      const name = match[1].trim();
-      const parts = match[2].trim().split(',').map(p => p.trim());
+        const regex = /^(.+?)\s+[–—-]\s+(.+)$/;
+        const match = cleaned.match(regex);
+        if (!match) return null;
 
-      let age = parts[0] || 'Unknown age';
-      let height = 'N/A';
-      let position = '';
-      let clubLeague = '';
+        const name = match[1].trim();
+        const parts = match[2].trim().split(',').map(p => p.trim());
 
-      if (parts.length > 1 && parts[1].includes('cm')) {
-        height = parts[1];
-        position = parts[2] || '';
-        clubLeague = parts.slice(3).join(', ');
-      } else {
-        position = parts[1] || '';
-        clubLeague = parts.slice(2).join(', ');
-      }
+        let age = parts[0] || 'Unknown age';
+        let height = 'N/A';
+        let position = '';
+        let clubLeague = '';
 
-      return { name, age, height, position, clubLeague };
+        if (parts.length > 1 && parts[1].includes('cm')) {
+            height = parts[1];
+            position = parts[2] || '';
+            clubLeague = parts.slice(3).join(', ');
+        } else {
+            position = parts[1] || '';
+            clubLeague = parts.slice(2).join(', ');
+        }
+
+        return { name, age, height, position, clubLeague };
     }
 
     function renderResults(rawText, originalQuery) {
       resultsGrid.innerHTML = '';
-      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.startsWith('-'));
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.trim().length > 0 && !l.startsWith('No players'));
       const validPlayers = [];
 
       lines.forEach((line, index) => {

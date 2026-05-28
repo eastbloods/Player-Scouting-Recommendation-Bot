@@ -21,5 +21,14 @@ def search_augmentation(content):
     results = qdrant_retriever(content, metadata_filters)
 
     response = llm.invoke(
-        f"Answer ONLY using the search results below. Do not use your own knowledge.\n\nUser query: {content}\n\nSearch results: {results}\n\nAnswer:")
+        f"List ONLY the players from the search results below. "
+        f"Use this exact format for each player, one per line:\n"
+        f"- Player Name – X years old, Y cm, position, Club (League)\n"
+        f"Do not add any extra text, introduction, or summary. "
+        f"If no results found, write: No players found.\n\n"
+        f"User query: {content}\n\n"
+        f"Search results: {results}\n\n"
+        f"Players:"
+    )
+
     return response.content
