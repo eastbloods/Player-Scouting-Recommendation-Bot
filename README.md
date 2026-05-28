@@ -2,7 +2,7 @@
 
 > An AI-powered football player recommendation system. Ask in natural language, get real player suggestions backed by vector search and LLM reasoning.
 
-**Live demo:** [https://goatscout.space/docs](https://goatscout.space/docs)
+**Live demo:** [https://goatscout.space](https://goatscout.space)
 
 ---
 
