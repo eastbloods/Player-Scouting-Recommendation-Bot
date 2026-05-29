@@ -12,660 +12,603 @@
 
   <style>
     :root {
-      --bg-primary: #080c18;
-      --bg-card: #0f1629;
-      --bg-input: #141c30;
-      --bg-stat: #1a2540;
-      --accent: #22c55e;
-      --accent-dim: rgba(34,197,94,0.12);
-      --accent-border: rgba(34,197,94,0.3);
-      --accent-glow: 0 0 20px rgba(34,197,94,0.2);
-      --blue: #3b82f6;
-      --blue-dim: rgba(59,130,246,0.12);
-      --amber: #f59e0b;
-      --amber-dim: rgba(245,158,11,0.12);
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #475569;
+      --bg:        #080c18;
+      --bg-card:   #0f1629;
+      --bg-input:  #141c30;
+      --bg-stat:   #1a2540;
+      --accent:    #22c55e;
+      --accent-d:  rgba(34,197,94,.12);
+      --accent-b:  rgba(34,197,94,.3);
+      --accent-g:  0 0 20px rgba(34,197,94,.2);
+      --blue:      #3b82f6;
+      --blue-d:    rgba(59,130,246,.12);
+      --amber:     #f59e0b;
+      --amber-d:   rgba(245,158,11,.12);
+      --red-d:     rgba(239,68,68,.12);
+      --purple-d:  rgba(168,85,247,.12);
+      --t1:  #f1f5f9;
+      --t2:  #94a3b8;
+      --t3:  #475569;
       --border: #1e2d45;
-      --radius: 14px;
+      --r: 12px;
       --font: 'Inter', sans-serif;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--t1);font-family:var(--font);min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Header ── */
+    header{padding:1.1rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(8,12,24,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:20}
+    .logo{display:flex;align-items:center;gap:.6rem}
+    .logo-text{font-size:1.2rem;font-weight:800;letter-spacing:-.02em}
+    .logo-badge{font-size:.65rem;font-weight:700;background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-b);padding:.15rem .5rem;border-radius:999px;letter-spacing:.05em}
+    nav a{color:var(--t3);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;margin-left:1.5rem}
+    nav a:hover{color:var(--accent)}
 
-    body {
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-family: var(--font);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-    }
+    /* ── Main ── */
+    main{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2.5rem 1.5rem 4rem}
 
-    /* ─── Header ────────────────────────────────────────────── */
-    header {
-      padding: 1.25rem 2rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(8,12,24,0.85);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    /* ── Hero ── */
+    .hero{text-align:center;margin-bottom:2rem}
+    .hero h1{font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-.03em;line-height:1.2;margin-bottom:.6rem}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--t2);font-size:.95rem;max-width:480px;margin:0 auto}
 
-    .logo { display: flex; align-items: center; gap: 0.6rem; }
-    .logo-icon { font-size: 1.5rem; }
-    .logo-text { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
-    .logo-badge {
-      font-size: 0.65rem;
-      font-weight: 600;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border: 1px solid var(--accent-border);
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      letter-spacing: 0.05em;
-    }
+    /* ── Search bar ── */
+    .search-row{max-width:780px;margin:0 auto 1rem;display:flex;gap:.6rem}
+    .search-wrap{flex:1;position:relative}
+    .search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--t3);font-size:1.1rem;pointer-events:none}
+    #search-input{width:100%;height:52px;background:var(--bg-input);border:1.5px solid var(--border);color:var(--t1);padding:0 1rem 0 2.75rem;border-radius:var(--r);font-family:inherit;font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s}
+    #search-input:focus{border-color:var(--accent-b);box-shadow:var(--accent-g)}
+    #search-input::placeholder{color:var(--t3)}
+    #scout-btn{min-width:130px;background:var(--accent);color:#fff;border:none;height:52px;padding:0 1.5rem;border-radius:var(--r);font-size:.9375rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:.4rem;justify-content:center}
+    #scout-btn:hover:not(:disabled){background:#16a34a;transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,.35)}
+    #scout-btn:disabled{background:var(--border);color:var(--t3);cursor:not-allowed;transform:none}
 
-    .header-links { display: flex; gap: 1.5rem; }
-    .header-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .header-links a:hover { color: var(--accent); }
+    /* ── Filter Panel ── */
+    .filter-panel{max-width:780px;margin:0 auto 1.5rem;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem}
 
-    /* ─── Main ──────────────────────────────────────────────── */
-    main {
-      flex: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 3rem 1.5rem 4rem;
-    }
+    .filter-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+    .filter-toggle-label{font-size:.875rem;font-weight:600;color:var(--t2);display:flex;align-items:center;gap:.5rem}
+    .filter-toggle-icon{font-size:.7rem;color:var(--t3);transition:transform .2s}
+    .filter-toggle-icon.open{transform:rotate(180deg)}
+    .filter-active-count{background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-b);font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:999px}
 
-    /* ─── Hero ──────────────────────────────────────────────── */
-    .hero {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .hero h1 {
-      font-size: clamp(1.75rem, 4vw, 2.75rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      max-width: 500px;
-      margin: 0 auto;
-    }
+    .filter-body{display:flex;flex-direction:column;gap:1rem}
+    .filter-body.collapsed{display:none}
 
-    /* ─── Search ────────────────────────────────────────────── */
-    .search-box {
-      max-width: 720px;
-      margin: 0 auto 1.5rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: stretch;
-    }
+    .filter-row{display:flex;gap:1rem;flex-wrap:wrap}
 
-    .search-wrapper {
-      flex: 1;
-      position: relative;
-    }
+    /* Position buttons */
+    .pos-group{display:flex;flex-direction:column;gap:.5rem;width:100%}
+    .pos-group-label{font-size:.75rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+    .pos-btns{display:flex;flex-wrap:wrap;gap:.4rem}
+    .pos-btn{background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t2);padding:.3rem .75rem;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
+    .pos-btn:hover{border-color:var(--accent-b);color:var(--accent)}
+    .pos-btn.active{background:var(--accent-d);border-color:var(--accent-b);color:var(--accent)}
+    .pos-btn.active.gk{background:var(--purple-d);border-color:rgba(168,85,247,.35);color:#c084fc}
+    .pos-btn.active.def{background:var(--blue-d);border-color:rgba(59,130,246,.35);color:var(--blue)}
+    .pos-btn.active.mid{background:var(--amber-d);border-color:rgba(245,158,11,.35);color:var(--amber)}
+    .pos-btn.active.att{background:var(--red-d);border-color:rgba(239,68,68,.35);color:#f87171}
 
-    .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      pointer-events: none;
-    }
+    /* Range sliders */
+    .range-group{display:flex;flex-direction:column;gap:.5rem;min-width:160px;flex:1}
+    .range-label{font-size:.75rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center}
+    .range-val{color:var(--t1);font-weight:700}
+    .range-row{display:flex;gap:.5rem;align-items:center}
+    .range-input{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+    .range-input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg)}
+    .range-sep{color:var(--t3);font-size:.875rem}
 
-    #search-input {
-      width: 100%;
-      height: 100%;
-      min-height: 52px;
-      background: var(--bg-input);
-      border: 1.5px solid var(--border);
-      color: var(--text-primary);
-      padding: 0.875rem 1rem 0.875rem 2.75rem;
-      border-radius: var(--radius);
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    #search-input:focus {
-      border-color: var(--accent-border);
-      box-shadow: var(--accent-glow);
-    }
-    #search-input::placeholder { color: var(--text-muted); }
+    /* Select dropdowns */
+    .select-group{display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:160px}
+    .select-label{font-size:.75rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+    .filter-select{background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.45rem .75rem;border-radius:8px;font-family:inherit;font-size:.875rem;outline:none;cursor:pointer;transition:border-color .2s;width:100%}
+    .filter-select:focus{border-color:var(--accent-b)}
 
-    #scout-button {
-      min-width: 140px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.875rem 1.5rem;
-      border-radius: var(--radius);
-      font-size: 0.9375rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      white-space: nowrap;
-    }
-    #scout-button:hover:not(:disabled) {
-      background: #16a34a;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(34,197,94,0.35);
-    }
-    #scout-button:disabled {
-      background: var(--border);
-      color: var(--text-muted);
-      cursor: not-allowed;
-      transform: none;
-    }
+    .filter-actions{display:flex;gap:.75rem;align-items:center;padding-top:.25rem;border-top:1px solid var(--border)}
+    .clear-btn{background:none;border:1px solid var(--border);color:var(--t3);padding:.4rem .9rem;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .clear-btn:hover{border-color:var(--t3);color:var(--t2)}
+    .active-summary{font-size:.8rem;color:var(--t2);flex:1}
 
-    /* ─── Chips ─────────────────────────────────────────────── */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      margin-bottom: 3rem;
-      max-width: 720px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    /* ── Chips ── */
+    .chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2.5rem;max-width:780px;margin-left:auto;margin-right:auto}
+    .chip{background:var(--bg-card);border:1px solid var(--border);color:var(--t2);padding:.35rem .85rem;border-radius:999px;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s}
+    .chip:hover{border-color:var(--accent-b);color:var(--accent);background:var(--accent-d)}
 
-    .chip {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 0.375rem 0.875rem;
-      border-radius: 999px;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .chip:hover {
-      border-color: var(--accent-border);
-      color: var(--accent);
-      background: var(--accent-dim);
-    }
+    /* ── States ── */
+    .hidden{display:none!important}
+    .empty-state{text-align:center;color:var(--t3);padding:4rem 0}
+    .empty-state .icon{font-size:3.5rem;display:block;margin-bottom:1rem}
+    .empty-state h2{font-size:1.2rem;font-weight:600;margin-bottom:.5rem;color:var(--t2)}
+    .error-state{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r);padding:1.5rem;text-align:center;color:#fca5a5}
+    .error-state h3{margin-bottom:.4rem}
 
-    /* ─── States ─────────────────────────────────────────────── */
-    .hidden { display: none !important; }
+    /* ── Skeleton ── */
+    .skeleton-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .skeleton-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;animation:pulse 1.5s infinite}
+    .skel{background:var(--border);border-radius:6px;height:.9rem}
+    .skel.w75{width:75%}.skel.w50{width:50%}.skel.w60{width:60%}
+    @keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
 
-    .empty-state {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 4rem 0;
-    }
-    .empty-state .icon { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
-    .empty-state h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary); }
+    /* ── Results ── */
+    .results-hdr{font-size:.875rem;color:var(--t2);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+    .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 
-    .error-state {
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.25);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      text-align: center;
-      color: #fca5a5;
-    }
-    .error-state h3 { margin-bottom: 0.4rem; }
+    /* ── Player Card ── */
+    .player-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;display:flex;flex-direction:column;gap:.875rem;transition:border-color .2s,box-shadow .2s,transform .2s;animation:fadeUp .4s ease backwards}
+    .player-card:hover{border-color:var(--accent-b);box-shadow:0 4px 24px rgba(34,197,94,.1);transform:translateY(-2px)}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+    .player-name{font-size:1rem;font-weight:700;color:var(--t1);line-height:1.3}
+    .pos-badge{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:6px;white-space:nowrap;flex-shrink:0}
+    .badge-def{background:var(--blue-d);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+    .badge-att{background:var(--red-d);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+    .badge-mid{background:var(--amber-d);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+    .badge-gk{background:var(--purple-d);color:#c084fc;border:1px solid rgba(168,85,247,.25)}
+    .badge-default{background:var(--bg-stat);color:var(--t2);border:1px solid var(--border)}
+    .card-meta{font-size:.8125rem;color:var(--t2);display:flex;flex-direction:column;gap:.2rem}
+    .card-meta .age-line{color:var(--t1);font-weight:500}
+    .divider{height:1px;background:var(--border)}
+    .stats-row{display:flex;flex-wrap:wrap;gap:.4rem}
+    .stat-pill{font-size:.7rem;font-weight:600;background:var(--bg-stat);border:1px solid var(--border);color:var(--t2);padding:.2rem .55rem;border-radius:6px}
+    .rating-pill{font-size:.7rem;font-weight:700;background:var(--accent-d);border:1px solid var(--accent-b);color:var(--accent);padding:.2rem .55rem;border-radius:6px}
+    .scout-note{font-size:.78rem;color:var(--t3);font-style:italic;line-height:1.5;border-left:2px solid var(--accent-b);padding-left:.6rem}
 
-    /* ─── Skeleton ───────────────────────────────────────────── */
-    .skeleton-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-    .skeleton-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    .skel { background: var(--border); border-radius: 6px; height: 0.9rem; }
-    .skel.w-3-4 { width: 75%; }
-    .skel.w-1-2 { width: 50%; }
-    .skel.w-2-3 { width: 66%; }
+    /* ── Footer ── */
+    footer{text-align:center;padding:2rem;color:var(--t3);font-size:.75rem;border-top:1px solid var(--border)}
+    footer a{color:inherit;text-decoration:none;transition:color .2s}
+    footer a:hover{color:var(--t2)}
 
-    @keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ─── Results ────────────────────────────────────────────── */
-    .results-header {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-
-    /* ─── Player Card ────────────────────────────────────────── */
-    .player-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.875rem;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-      animation: fadeUp 0.4s ease backwards;
-    }
-    .player-card:hover {
-      border-color: var(--accent-border);
-      box-shadow: 0 4px 24px rgba(34,197,94,0.1);
-      transform: translateY(-2px);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-
-    .player-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.3;
-    }
-
-    .position-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .badge-defender  { background: var(--blue-dim);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
-    .badge-attacker  { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
-    .badge-midfielder{ background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
-    .badge-goalkeeper{ background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
-    .badge-default   { background: var(--bg-stat); color: var(--text-secondary); border: 1px solid var(--border); }
-
-    .card-meta {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-    .card-meta .age-line { color: var(--text-primary); font-weight: 500; }
-
-    .divider { height: 1px; background: var(--border); }
-
-    .stats-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .stat-pill {
-      font-size: 0.7rem;
-      font-weight: 600;
-      background: var(--bg-stat);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
-    }
-
-    .rating-pill {
-      font-size: 0.7rem;
-      font-weight: 700;
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
-    }
-
-    .scout-note {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-style: italic;
-      line-height: 1.5;
-      border-left: 2px solid var(--accent-border);
-      padding-left: 0.6rem;
-    }
-
-    /* ─── Footer ─────────────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-    footer a { color: inherit; text-decoration: none; transition: color 0.2s; }
-    footer a:hover { color: var(--text-secondary); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 960px) {
-      .results-grid, .skeleton-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 640px) {
-      .results-grid, .skeleton-grid { grid-template-columns: 1fr; }
-      .search-box { flex-direction: column; }
-      #scout-button { min-width: 100%; }
-      header { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+    @media(max-width:960px){.results-grid,.skeleton-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){
+      .results-grid,.skeleton-grid{grid-template-columns:1fr}
+      .search-row{flex-direction:column}
+      #scout-btn{min-width:100%;height:48px}
+      header{flex-direction:column;gap:.6rem;align-items:flex-start}
+      .filter-row{flex-direction:column}
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">
-      <span class="logo-icon">⚽</span>
-      <span class="logo-text">GoatScout</span>
-      <span class="logo-badge">AI BETA</span>
-    </div>
-    <nav class="header-links">
-      <a href="/docs" target="_blank" rel="noopener">API Docs ↗</a>
-      <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener">GitHub ↗</a>
-    </nav>
-  </header>
+<header>
+  <div class="logo">
+    <span style="font-size:1.4rem">⚽</span>
+    <span class="logo-text">GoatScout</span>
+    <span class="logo-badge">AI BETA</span>
+  </div>
+  <nav>
+    <a href="/docs" target="_blank" rel="noopener">API Docs ↗</a>
+    <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
 
-  <main>
-    <div class="hero">
-      <h1>Find your next <span>football star</span></h1>
-      <p>Search 33 000+ players across 80+ leagues using natural language.</p>
+<main>
+  <div class="hero">
+    <h1>Find your next <span>football star</span></h1>
+    <p>Search 33 000+ players across 80+ leagues using natural language and smart filters.</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search-input" type="text" placeholder="e.g. box-to-box midfielder with high pressing and good passing …">
+    </div>
+    <button id="scout-btn">⚡ Scout</button>
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="filter-panel" id="filter-panel">
+    <div class="filter-toggle" id="filter-toggle">
+      <span class="filter-toggle-label">
+        🎛️ Filters
+        <span class="filter-active-count hidden" id="active-count">0</span>
+      </span>
+      <span class="filter-toggle-icon" id="toggle-icon">▼</span>
     </div>
 
-    <div class="search-box">
-      <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input id="search-input" type="text"
-          placeholder="e.g. young defensive midfielder good passer under 24 …">
+    <div class="filter-body collapsed" id="filter-body">
+
+      <!-- Position -->
+      <div class="pos-group">
+        <div class="pos-group-label">Position</div>
+        <div class="pos-btns">
+          <button class="pos-btn gk"  data-pos="goalkeeper">GK</button>
+          <button class="pos-btn def" data-pos="centre-back">CB</button>
+          <button class="pos-btn def" data-pos="right-back">RB</button>
+          <button class="pos-btn def" data-pos="left-back">LB</button>
+          <button class="pos-btn def" data-pos="defender">DEF</button>
+          <button class="pos-btn mid" data-pos="defensive midfielder">DM</button>
+          <button class="pos-btn mid" data-pos="central midfielder">CM</button>
+          <button class="pos-btn mid" data-pos="attacking midfielder">AM</button>
+          <button class="pos-btn mid" data-pos="midfielder">MID</button>
+          <button class="pos-btn att" data-pos="winger">WIN</button>
+          <button class="pos-btn att" data-pos="striker">ST</button>
+          <button class="pos-btn att" data-pos="attacker">ATT</button>
+        </div>
       </div>
-      <button id="scout-button">⚡ Scout</button>
-    </div>
 
-    <div class="chips" id="chips"></div>
+      <div class="filter-row">
+        <!-- Age Range -->
+        <div class="range-group">
+          <div class="range-label">
+            Age
+            <span class="range-val" id="age-val">16 – 40</span>
+          </div>
+          <div class="range-row">
+            <input type="range" class="range-input" id="age-min" min="16" max="40" value="16">
+            <span class="range-sep">–</span>
+            <input type="range" class="range-input" id="age-max" min="16" max="40" value="40">
+          </div>
+        </div>
 
-    <!-- States -->
-    <div id="empty-state" class="empty-state">
-      <span class="icon">🎯</span>
-      <h2>Start scouting</h2>
-      <p>Type a query or pick an example above.</p>
-    </div>
+        <!-- Height Range -->
+        <div class="range-group">
+          <div class="range-label">
+            Height (cm)
+            <span class="range-val" id="height-val">Any</span>
+          </div>
+          <div class="range-row">
+            <input type="range" class="range-input" id="height-min" min="155" max="210" value="155">
+            <span class="range-sep">–</span>
+            <input type="range" class="range-input" id="height-max" min="155" max="210" value="210">
+          </div>
+        </div>
 
-    <div id="error-state" class="error-state hidden">
-      <h3>⚠️ Something went wrong</h3>
-      <p>The API may be warming up. Try again in a moment.</p>
-    </div>
+        <!-- Nationality -->
+        <div class="select-group">
+          <div class="select-label">Nationality</div>
+          <select class="filter-select" id="nationality-select">
+            <option value="">All nationalities</option>
+          </select>
+        </div>
 
-    <div id="loading-state" class="skeleton-grid hidden">
-      <div class="skeleton-card">
-        <div class="skel w-3-4"></div><div class="skel w-1-2"></div>
-        <div class="skel"></div><div class="skel w-2-3"></div>
+        <!-- League -->
+        <div class="select-group">
+          <div class="select-label">League</div>
+          <select class="filter-select" id="league-select">
+            <option value="">All leagues</option>
+          </select>
+        </div>
       </div>
-      <div class="skeleton-card">
-        <div class="skel w-3-4"></div><div class="skel w-1-2"></div>
-        <div class="skel"></div><div class="skel w-2-3"></div>
+
+      <div class="filter-actions">
+        <span class="active-summary" id="active-summary"></span>
+        <button class="clear-btn" id="clear-btn">✕ Clear filters</button>
       </div>
-      <div class="skeleton-card">
-        <div class="skel w-3-4"></div><div class="skel w-1-2"></div>
-        <div class="skel"></div><div class="skel w-2-3"></div>
-      </div>
+
     </div>
+  </div>
 
-    <div id="results-area" class="hidden">
-      <div id="results-header" class="results-header"></div>
-      <div id="results-grid" class="results-grid"></div>
-    </div>
-  </main>
+  <!-- Example chips -->
+  <div class="chips" id="chips"></div>
 
-  <footer>
-    Powered by Qdrant · LangChain · Groq · FastAPI &nbsp;|&nbsp;
-    33 000+ players &nbsp;·&nbsp; 80+ leagues &nbsp;·&nbsp; 2025/26 season<br>
-    <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot"
-       target="_blank" rel="noopener" style="margin-top:0.4rem;display:inline-block;">
-      View on GitHub ↗
-    </a>
-  </footer>
+  <!-- States -->
+  <div id="empty-state" class="empty-state">
+    <span class="icon">🎯</span>
+    <h2>Start scouting</h2>
+    <p>Type a query or select filters above.</p>
+  </div>
 
-  <script>
-    const EXAMPLE_QUERIES = [
-      "young winger under 22 fast dribbler",
-      "defensive midfielder high tackles over 28",
-      "tall striker over 190cm aerial duels",
-      "French winger top league",
-      "goalkeeper under 22",
-      "experienced centre-back over 30",
-      "fast right-back good crosses",
-      "attacking midfielder creative playmaker",
-    ];
+  <div id="error-state" class="error-state hidden">
+    <h3>⚠️ Something went wrong</h3>
+    <p>The API may be warming up. Try again in a moment.</p>
+  </div>
 
-    // ── DOM refs ────────────────────────────────────────────────
-    const searchInput   = document.getElementById('search-input');
-    const scoutBtn      = document.getElementById('scout-button');
-    const chipsEl       = document.getElementById('chips');
-    const emptyState    = document.getElementById('empty-state');
-    const errorState    = document.getElementById('error-state');
-    const loadingState  = document.getElementById('loading-state');
-    const resultsArea   = document.getElementById('results-area');
-    const resultsGrid   = document.getElementById('results-grid');
-    const resultsHeader = document.getElementById('results-header');
+  <div id="loading-state" class="skeleton-grid hidden">
+    <div class="skeleton-card"><div class="skel w75"></div><div class="skel w50"></div><div class="skel"></div><div class="skel w60"></div></div>
+    <div class="skeleton-card"><div class="skel w75"></div><div class="skel w50"></div><div class="skel"></div><div class="skel w60"></div></div>
+    <div class="skeleton-card"><div class="skel w75"></div><div class="skel w50"></div><div class="skel"></div><div class="skel w60"></div></div>
+  </div>
 
-    // ── Chips ───────────────────────────────────────────────────
-    EXAMPLE_QUERIES.forEach(q => {
-      const btn = document.createElement('button');
-      btn.className = 'chip';
-      btn.textContent = q;
-      btn.onclick = () => { searchInput.value = q; handleSearch(); };
-      chipsEl.appendChild(btn);
+  <div id="results-area" class="hidden">
+    <div id="results-hdr" class="results-hdr"></div>
+    <div id="results-grid" class="results-grid"></div>
+  </div>
+</main>
+
+<footer>
+  Powered by Qdrant · LangChain · Groq · FastAPI &nbsp;|&nbsp;
+  33 000+ players &nbsp;·&nbsp; 80+ leagues &nbsp;·&nbsp; 2025/26 season<br>
+  <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener" style="margin-top:.4rem;display:inline-block">View on GitHub ↗</a>
+</footer>
+
+<script>
+const EXAMPLES = [
+  "box-to-box midfielder good under pressure",
+  "young winger under 22 fast dribbler",
+  "tall striker over 190cm aerial duels",
+  "experienced centre-back over 30 good in the air",
+  "goalkeeper with sweeper-keeper style",
+  "creative attacking midfielder low budget",
+];
+
+// ── DOM ──────────────────────────────────────────────────────────────────────
+const searchInput   = document.getElementById('search-input');
+const scoutBtn      = document.getElementById('scout-btn');
+const emptyState    = document.getElementById('empty-state');
+const errorState    = document.getElementById('error-state');
+const loadingState  = document.getElementById('loading-state');
+const resultsArea   = document.getElementById('results-area');
+const resultsGrid   = document.getElementById('results-grid');
+const resultsHdr    = document.getElementById('results-hdr');
+const chips         = document.getElementById('chips');
+const filterToggle  = document.getElementById('filter-toggle');
+const filterBody    = document.getElementById('filter-body');
+const toggleIcon    = document.getElementById('toggle-icon');
+const activeCount   = document.getElementById('active-count');
+const activeSummary = document.getElementById('active-summary');
+const clearBtn      = document.getElementById('clear-btn');
+const ageMin        = document.getElementById('age-min');
+const ageMax        = document.getElementById('age-max');
+const ageVal        = document.getElementById('age-val');
+const heightMin     = document.getElementById('height-min');
+const heightMax     = document.getElementById('height-max');
+const heightVal     = document.getElementById('height-val');
+const natSelect     = document.getElementById('nationality-select');
+const leagueSelect  = document.getElementById('league-select');
+
+// ── Filter State ──────────────────────────────────────────────────────────────
+let selectedPosition = null;
+let filtersOpen = false;
+
+// ── Chips ─────────────────────────────────────────────────────────────────────
+EXAMPLES.forEach(q => {
+  const btn = document.createElement('button');
+  btn.className = 'chip'; btn.textContent = q;
+  btn.onclick = () => { searchInput.value = q; handleSearch(); };
+  chips.appendChild(btn);
+});
+
+// ── Filter toggle ─────────────────────────────────────────────────────────────
+filterToggle.addEventListener('click', () => {
+  filtersOpen = !filtersOpen;
+  filterBody.classList.toggle('collapsed', !filtersOpen);
+  toggleIcon.classList.toggle('open', filtersOpen);
+});
+
+// ── Position buttons ──────────────────────────────────────────────────────────
+document.querySelectorAll('.pos-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (selectedPosition === btn.dataset.pos) {
+      btn.classList.remove('active');
+      selectedPosition = null;
+    } else {
+      document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedPosition = btn.dataset.pos;
+    }
+    updateActiveSummary();
+  });
+});
+
+// ── Range sliders ─────────────────────────────────────────────────────────────
+function updateAgeDisplay() {
+  const lo = parseInt(ageMin.value), hi = parseInt(ageMax.value);
+  const lo2 = Math.min(lo, hi), hi2 = Math.max(lo, hi);
+  ageVal.textContent = (lo2 === 16 && hi2 === 40) ? 'Any' : `${lo2} – ${hi2}`;
+  updateActiveSummary();
+}
+function updateHeightDisplay() {
+  const lo = parseInt(heightMin.value), hi = parseInt(heightMax.value);
+  const lo2 = Math.min(lo, hi), hi2 = Math.max(lo, hi);
+  heightVal.textContent = (lo2 === 155 && hi2 === 210) ? 'Any' : `${lo2} – ${hi2} cm`;
+  updateActiveSummary();
+}
+ageMin.addEventListener('input', updateAgeDisplay);
+ageMax.addEventListener('input', updateAgeDisplay);
+heightMin.addEventListener('input', updateHeightDisplay);
+heightMax.addEventListener('input', updateHeightDisplay);
+
+// ── Dropdowns → update summary ────────────────────────────────────────────────
+natSelect.addEventListener('change', updateActiveSummary);
+leagueSelect.addEventListener('change', updateActiveSummary);
+
+// ── Active filter summary ─────────────────────────────────────────────────────
+function updateActiveSummary() {
+  const parts = [];
+  if (selectedPosition) parts.push(selectedPosition);
+  const ageL = parseInt(ageMin.value), ageH = parseInt(ageMax.value);
+  if (ageL !== 16 || ageH !== 40) parts.push(`age ${Math.min(ageL,ageH)}-${Math.max(ageL,ageH)}`);
+  const htL = parseInt(heightMin.value), htH = parseInt(heightMax.value);
+  if (htL !== 155 || htH !== 210) parts.push(`${Math.min(htL,htH)}-${Math.max(htL,htH)}cm`);
+  if (natSelect.value) parts.push(natSelect.value);
+  if (leagueSelect.value) parts.push(leagueSelect.value);
+
+  if (parts.length > 0) {
+    activeCount.textContent = parts.length;
+    activeCount.classList.remove('hidden');
+    activeSummary.textContent = 'Active: ' + parts.join(' · ');
+  } else {
+    activeCount.classList.add('hidden');
+    activeSummary.textContent = '';
+  }
+}
+
+// ── Clear filters ─────────────────────────────────────────────────────────────
+clearBtn.addEventListener('click', () => {
+  selectedPosition = null;
+  document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+  ageMin.value = 16; ageMax.value = 40; updateAgeDisplay();
+  heightMin.value = 155; heightMax.value = 210; updateHeightDisplay();
+  natSelect.value = ''; leagueSelect.value = '';
+  updateActiveSummary();
+});
+
+// ── Load meta dropdowns ───────────────────────────────────────────────────────
+async function loadMeta() {
+  try {
+    const [leagueRes, natRes] = await Promise.all([
+      fetch('/meta/leagues'), fetch('/meta/nationalities')
+    ]);
+    const leagueData = await leagueRes.json();
+    const natData    = await natRes.json();
+
+    leagueData.leagues.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = l;
+      leagueSelect.appendChild(opt);
     });
+    natData.nationalities.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = n;
+      natSelect.appendChild(opt);
+    });
+  } catch(e) {
+    console.warn('Could not load meta dropdowns:', e);
+  }
+}
+loadMeta();
 
-    // ── State ───────────────────────────────────────────────────
-    function showOnly(name) {
-      emptyState.classList.add('hidden');
-      errorState.classList.add('hidden');
-      loadingState.classList.add('hidden');
-      resultsArea.classList.add('hidden');
-      if (name === 'empty')   emptyState.classList.remove('hidden');
-      if (name === 'error')   errorState.classList.remove('hidden');
-      if (name === 'loading') loadingState.classList.remove('hidden');
-      if (name === 'results') resultsArea.classList.remove('hidden');
-    }
+// ── State management ──────────────────────────────────────────────────────────
+function showOnly(name) {
+  emptyState.classList.add('hidden');
+  errorState.classList.add('hidden');
+  loadingState.classList.add('hidden');
+  resultsArea.classList.add('hidden');
+  if (name === 'empty')   emptyState.classList.remove('hidden');
+  if (name === 'error')   errorState.classList.remove('hidden');
+  if (name === 'loading') loadingState.classList.remove('hidden');
+  if (name === 'results') resultsArea.classList.remove('hidden');
+}
+function setLoading(on) {
+  scoutBtn.disabled = on;
+  scoutBtn.innerHTML = on ? '⏳ Scouting…' : '⚡ Scout';
+}
 
-    function setLoading(on) {
-      scoutBtn.disabled = on;
-      scoutBtn.innerHTML = on ? '⏳ Scouting…' : '⚡ Scout';
-    }
+// ── Build search payload ──────────────────────────────────────────────────────
+function buildPayload() {
+  const payload = { text: searchInput.value.trim() };
+  if (selectedPosition)   payload.position    = selectedPosition;
 
-    // ── Parse LLM output ────────────────────────────────────────
-    /**
-     * Parses LLM text into player objects.
-     * Expected line format:
-     * Name | Age, Club (League) | Position | ★ Rating X.XX | Key: stat1, stat2
-     * → Scout reason text
-     */
-    function parsePlayers(rawText) {
-      const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-      const players = [];
-      let current = null;
+  const ageL = parseInt(ageMin.value), ageH = parseInt(ageMax.value);
+  if (ageL !== 16 || ageH !== 40) {
+    payload.min_age = Math.min(ageL, ageH);
+    payload.max_age = Math.max(ageL, ageH);
+  }
 
-      for (const line of lines) {
-        // Player line: contains | and is NOT a reason/arrow line
-        const isPlayerLine = line.includes('|')
-          && !line.startsWith('→')
-          && !line.startsWith('>')
-          && !line.startsWith('No players');
+  const htL = parseInt(heightMin.value), htH = parseInt(heightMax.value);
+  if (htL !== 155 || htH !== 210) {
+    payload.min_height = Math.min(htL, htH);
+    payload.max_height = Math.max(htL, htH);
+  }
 
-        if (isPlayerLine) {
-          if (current) players.push(current);
-          current = parsePlayerLine(line);
-        }
-        // Reason line
-        else if ((line.startsWith('→') || line.startsWith('>')) && current) {
-          current.reason = line.replace(/^[→>]\s*/, '');
-        }
-      }
-      if (current) players.push(current);
+  if (natSelect.value)    payload.nationality = natSelect.value;
+  if (leagueSelect.value) payload.league      = leagueSelect.value;
+  return payload;
+}
 
-      return players.filter(p => p && p.name && p.name.toLowerCase() !== 'none');
-    }
+// ── Parse + Render ────────────────────────────────────────────────────────────
+function parsePlayers(raw) {
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const players = []; let cur = null;
+  for (const line of lines) {
+    const isPlayer = line.includes('|')
+      && !line.startsWith('→') && !line.startsWith('>') && !line.startsWith('No players');
+    if (isPlayer) { if (cur) players.push(cur); cur = parseLine(line); }
+    else if ((line.startsWith('→') || line.startsWith('>')) && cur)
+      cur.reason = line.replace(/^[→>]\s*/, '');
+  }
+  if (cur) players.push(cur);
+  return players.filter(p => p && p.name && p.name.toLowerCase() !== 'none');
+}
 
-    function parsePlayerLine(line) {
-      // Strip leading bullet + strip ** markers (may or may not be present)
-      const raw = line.replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim();
-      const parts = raw.split('|').map(p => p.trim());
-      if (parts.length < 2) return null;
+function parseLine(line) {
+  const raw = line.replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim();
+  const parts = raw.split('|').map(p => p.trim());
+  if (parts.length < 2) return null;
+  const name = parts[0].trim();
+  if (!name || name.toLowerCase() === 'none') return null;
 
-      const name = parts[0].trim();
-      if (!name || name.toLowerCase() === 'none') return null;
+  const ageClub   = parts[1] || '';
+  const posStr    = parts[2] || '';
+  const ratingStr = parts[3] || '';
+  const keyStr    = parts[4] || '';
 
-      const ageClub  = parts[1] || '';  // "26, Panserraikos (Super League)"
-      const posStr   = parts[2] || '';  // "Right-back" or "defender (centre-back)"
-      const ratingStr= parts[3] || '';  // "★ Rating 6.60" or "★ 6.42" or "N/A"
-      const keyStr   = parts[4] || '';  // "Key: 131/251 duels, 79 crosses"
+  const ageM   = ageClub.match(/^(\d+)/);
+  const age    = ageM ? ageM[1] : '';
+  const clM    = ageClub.match(/,\s*(.+?)\s*\((.+?)\)\s*$/);
+  const club   = clM ? clM[1].trim() : '';
+  const league = clM ? clM[2].trim() : '';
+  const rM     = ratingStr.match(/(\d\.\d+)/);
+  const rating = rM ? parseFloat(rM[1]) : null;
+  const keyStats = keyStr.replace(/^Key:\s*/i, '').trim();
 
-      // Age (first number)
-      const ageMatch = ageClub.match(/^(\d+)/);
-      const age = ageMatch ? ageMatch[1] : '';
+  const pl = posStr.toLowerCase();
+  let cat = 'default';
+  if (pl.includes('keeper') || pl.includes('goalkeeper'))  cat = 'gk';
+  else if (pl.includes('back') || pl.includes('defend') || pl.includes('centre-b')) cat = 'def';
+  else if (pl.includes('wing') || pl.includes('forward') || pl.includes('striker') || pl.includes('attack')) cat = 'att';
+  else if (pl.includes('mid')) cat = 'mid';
 
-      // Club + League
-      const clMatch = ageClub.match(/,\s*(.+?)\s*\((.+?)\)\s*$/);
-      const club   = clMatch ? clMatch[1].trim() : '';
-      const league = clMatch ? clMatch[2].trim() : '';
+  return { name, age, club, league, position: posStr, cat, rating, keyStats, reason: '' };
+}
 
-      // Rating
-      const rMatch = ratingStr.match(/([\d.]+)/);
-      const rating = rMatch ? parseFloat(rMatch[1]) : null;
+function renderResults(raw, query) {
+  const players = parsePlayers(raw);
+  resultsGrid.innerHTML = '';
+  if (players.length === 0) {
+    resultsHdr.innerHTML = `⚠️ No players parsed — try a different query or adjust filters.`;
+    return;
+  }
+  resultsHdr.innerHTML = `✅ <strong>${players.length}</strong> player${players.length !== 1 ? 's' : ''} found${query ? ` for "<em>${query}</em>"` : ''}`;
 
-      // Key stats (strip "Key:")
-      const keyStats = keyStr.replace(/^Key:\s*/i, '').trim();
+  players.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.style.animationDelay = `${i * 0.07}s`;
 
-      // Position category for badge colour
-      const posLower = posStr.toLowerCase();
-      let posCategory = 'default';
-      if (posLower.includes('keeper') || posLower.includes('goalkeeper')) posCategory = 'goalkeeper';
-      else if (posLower.includes('back') || posLower.includes('defend') || posLower.includes('cb') || posLower.includes('centre-b')) posCategory = 'defender';
-      else if (posLower.includes('forward') || posLower.includes('striker') || posLower.includes('wing') || posLower.includes('attack')) posCategory = 'attacker';
-      else if (posLower.includes('mid')) posCategory = 'midfielder';
+    const ratingHtml = p.rating
+      ? `<span class="rating-pill">★ ${p.rating.toFixed(2)}</span>` : '';
+    const statHtml = p.keyStats
+      ? p.keyStats.split(',').slice(0,4).map(s => `<span class="stat-pill">${s.trim()}</span>`).join('') : '';
+    const reasonHtml = p.reason
+      ? `<p class="scout-note">${p.reason}</p>` : '';
 
-      return { name, age, club, league, position: posStr, posCategory, rating, keyStats, reason: '' };
-    }
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="player-name">${p.name}</div>
+        <span class="pos-badge badge-${p.cat}">${p.position || '?'}</span>
+      </div>
+      <div class="card-meta">
+        <span class="age-line">${p.age ? p.age + ' yrs' : ''}${p.age && p.club ? ' · ' : ''}${p.club}</span>
+        ${p.league ? `<span>🏆 ${p.league}</span>` : ''}
+      </div>
+      ${(ratingHtml || statHtml) ? `<div class="divider"></div><div class="stats-row">${ratingHtml}${statHtml}</div>` : ''}
+      ${reasonHtml}
+    `;
+    resultsGrid.appendChild(card);
+  });
+}
 
-    // ── Render ──────────────────────────────────────────────────
-    function renderResults(rawText, query) {
-      const players = parsePlayers(rawText);
-      resultsGrid.innerHTML = '';
+// ── Handle search ─────────────────────────────────────────────────────────────
+async function handleSearch() {
+  const payload = buildPayload();
+  if (!payload.text && !payload.position && !payload.min_age && !payload.min_height
+      && !payload.nationality && !payload.league) return;
 
-      if (players.length === 0) {
-        resultsHeader.innerHTML = `⚠️ No players parsed — try a different query.`;
-        return;
-      }
+  setLoading(true); showOnly('loading');
+  try {
+    const res = await fetch('/search/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    renderResults(data.text, payload.text);
+    showOnly('results');
+  } catch(e) {
+    console.error(e); showOnly('error');
+  } finally {
+    setLoading(false);
+  }
+}
 
-      resultsHeader.innerHTML =
-        `✅ <strong>${players.length}</strong> player${players.length !== 1 ? 's' : ''} found for "<em>${query}</em>"`;
-
-      players.forEach((p, i) => {
-        const card = document.createElement('div');
-        card.className = 'player-card';
-        card.style.animationDelay = `${i * 0.07}s`;
-
-        const ratingHtml = p.rating
-          ? `<span class="rating-pill">★ ${p.rating.toFixed(2)}</span>`
-          : '';
-
-        const statPills = p.keyStats
-          ? p.keyStats.split(',').slice(0, 4).map(s =>
-              `<span class="stat-pill">${s.trim()}</span>`
-            ).join('')
-          : '';
-
-        const reasonHtml = p.reason
-          ? `<p class="scout-note">${p.reason}</p>`
-          : '';
-
-        card.innerHTML = `
-          <div class="card-top">
-            <div class="player-name">${p.name}</div>
-            <span class="position-badge badge-${p.posCategory}">${p.position || '?'}</span>
-          </div>
-          <div class="card-meta">
-            <span class="age-line">${p.age ? p.age + ' yrs' : ''}${p.age && p.club ? ' · ' : ''}${p.club}</span>
-            ${p.league ? `<span>🏆 ${p.league}</span>` : ''}
-          </div>
-          ${(ratingHtml || statPills) ? `<div class="divider"></div><div class="stats-row">${ratingHtml}${statPills}</div>` : ''}
-          ${reasonHtml}
-        `;
-        resultsGrid.appendChild(card);
-      });
-    }
-
-    // ── Search ──────────────────────────────────────────────────
-    async function handleSearch() {
-      const query = searchInput.value.trim();
-      if (!query) return;
-
-      setLoading(true);
-      showOnly('loading');
-
-      try {
-        const res = await fetch('/search/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: query }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        renderResults(data.text, query);
-        showOnly('results');
-      } catch (err) {
-        console.error(err);
-        showOnly('error');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    scoutBtn.addEventListener('click', handleSearch);
-    searchInput.addEventListener('keyup', e => { if (e.key === 'Enter') handleSearch(); });
-  </script>
+scoutBtn.addEventListener('click', handleSearch);
+searchInput.addEventListener('keyup', e => { if (e.key === 'Enter') handleSearch(); });
+</script>
 </body>
 </html>
