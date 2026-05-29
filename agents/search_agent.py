@@ -181,23 +181,30 @@ def search_augmentation(
         return "No players found matching your criteria."
 
     # Step 4: Condense profiles for LLM (avoid token overflow)
-    condensed = []
-    for r in results:
-        condensed.append(_condense_profile(r))
+    condensed = [_condense_profile(r) for r in results]
+    profiles_text = "\n\n".join(condensed)
 
-    profiles = "\n\n".join(condensed)
-    try:
-        response = llm.invoke(
-            f"{SYSTEM_PROMPT}\n\n"
-            f"Scout Query: {content}\n\n"
-            f"Player Profiles:\n{profiles}\n\n"
-            f"Best Matches:"
-        )
-        return response.content
-    except Exception as e:
-        print(f"LLM formatting error: {e}")
-        # Build parser-friendly fallback from raw data
-        return _fallback_format(results)
+    from langchain_core.messages import SystemMessage, HumanMessage
+    for attempt in range(2):
+        try:
+            response = llm.invoke([
+                SystemMessage(content=SYSTEM_PROMPT),
+                HumanMessage(content=(
+                    f"Scout Query: {content or 'football player'}\n\n"
+                    f"Player Profiles:\n{profiles_text}\n\n"
+                    f"Format all players now:"
+                ))
+            ])
+            result_text = response.content.strip()
+            if result_text and '|' in result_text:
+                return result_text
+            print(f"LLM attempt {attempt+1} returned unexpected format, retrying...")
+        except Exception as e:
+            print(f"LLM formatting error (attempt {attempt+1}): {e}")
+
+    # Both attempts failed — build stat-based summaries from raw data
+    return _fallback_format(results)
+
 
 
 def _condense_profile(raw: str) -> str:
@@ -241,41 +248,76 @@ def _condense_profile(raw: str) -> str:
 
 
 def _fallback_format(results: list[str]) -> str:
-    """When LLM fails, build pipe-separated format from raw profiles."""
-    import re
+    """When LLM fails, build pipe-separated format with real stat summaries."""
     output = []
-    for raw in results[:15]:
+    for raw in results[:12]:
         lines = raw.strip().split('\n')
         first = lines[0] if lines else ''
 
-        name_m = re.match(r'^(.+?)\s*[–-]\s*(\d+)\s*years?\s*old,\s*(\d+)\s*cm,\s*(.+?),\s*nationality:\s*(.+?),\s*(.+?),\s*(.+?)\.', first)
+        name_m = re.match(
+            r'^(.+?)\s*[–-]\s*(\d+)\s*years?\s*old,\s*(\d+)\s*cm,\s*(.+?),\s*nationality:\s*(.+?),\s*(.+?),\s*(.+?)\.',
+            first
+        )
         if not name_m:
             continue
 
         name = name_m.group(1).strip()
-        if name == 'None' or not name:
+        if not name or name == 'None':
             continue
 
-        age = name_m.group(2)
-        pos = name_m.group(4).strip()
-        club = name_m.group(6).strip()
+        age    = name_m.group(2)
+        height = name_m.group(3)
+        pos    = name_m.group(4).strip()
+        nat    = name_m.group(5).strip()
+        club   = name_m.group(6).strip()
         league = name_m.group(7).strip()
 
-        rating_m = re.search(r'avg rating (\d+\.\d+)', raw)
-        rating = rating_m.group(1) if rating_m else 'N/A'
+        rating_m   = re.search(r'avg rating (\d+\.\d+)', raw)
+        rating     = rating_m.group(1) if rating_m else 'N/A'
+        goals_m    = re.search(r'(\d+) goals', raw)
+        assists_m  = re.search(r'(\d+) assists', raw)
+        shots_m    = re.search(r'(\d+) shots', raw)
+        tackles_m  = re.search(r'(\d+) tackles', raw)
+        aerials_m  = re.search(r'(\d+) aerials won', raw)
+        kp_m       = re.search(r'(\d+) key passes', raw)
+        app_m      = re.search(r'(\d+) appearances', raw)
+        drib_m     = re.search(r'(\d+)/\d+ dribbles', raw)
 
-        goals_m = re.search(r'(\d+) goals', raw)
-        tackles_m = re.search(r'(\d+) tackles', raw)
-        aerials_m = re.search(r'(\d+) aerials won', raw)
+        # Key stats for pipe field
+        key_stats = []
+        if goals_m:   key_stats.append(f"{goals_m.group(1)} goals")
+        if assists_m: key_stats.append(f"{assists_m.group(1)} assists")
+        if tackles_m: key_stats.append(f"{tackles_m.group(1)} tackles")
+        if aerials_m: key_stats.append(f"{aerials_m.group(1)} aerials won")
+        if kp_m:      key_stats.append(f"{kp_m.group(1)} key passes")
+        if drib_m:    key_stats.append(f"{drib_m.group(1)} dribbles")
 
-        stats = []
-        if goals_m: stats.append(f"{goals_m.group(1)} goals")
-        if tackles_m: stats.append(f"{tackles_m.group(1)} tackles")
-        if aerials_m: stats.append(f"{aerials_m.group(1)} aerials")
+        # Generate a real summary sentence
+        facts = []
+        if app_m: facts.append(f"{app_m.group(1)} appearances")
+        if goals_m and int(goals_m.group(1)) > 0:
+            g = goals_m.group(1)
+            a = assists_m.group(1) if assists_m else '0'
+            facts.append(f"{g} goals and {a} assists")
+        if tackles_m and int(tackles_m.group(1)) > 0:
+            facts.append(f"{tackles_m.group(1)} tackles")
+        if aerials_m and int(aerials_m.group(1)) > 0:
+            facts.append(f"{aerials_m.group(1)} aerials won")
+        if kp_m and int(kp_m.group(1)) > 0:
+            facts.append(f"{kp_m.group(1)} key passes")
+        if shots_m and int(shots_m.group(1)) > 0:
+            facts.append(f"{shots_m.group(1)} shots")
+        if drib_m and int(drib_m.group(1)) > 0:
+            facts.append(f"{drib_m.group(1)} successful dribbles")
+
+        if facts:
+            summary = f"{name} ({nat}, {height}cm) — this season: {', '.join(facts[:4])}."
+        else:
+            summary = f"{name} is a {pos} at {club} ({league}), aged {age}."
 
         output.append(
-            f"{name} | {age}, {club} ({league}) | {pos} | ★ Rating {rating} | Key: {', '.join(stats) or 'N/A'}\n"
-            f"→ Matched from database."
+            f"{name} | {age}, {club} ({league}) | {pos} | ★ Rating {rating} | Key: {', '.join(key_stats[:4]) or 'N/A'}\n"
+            f"→ {summary}"
         )
 
     return '\n'.join(output) if output else "No players found matching your criteria."

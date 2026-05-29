@@ -390,16 +390,64 @@ EXAMPLES.forEach(q => {
   document.getElementById('p-chips').appendChild(b);
 });
 
-/* ── Load Meta ───────────────────────────────── */
+/* ── Static seed lists (instant autocomplete, API enriches later) ─────── */
+META_NATIONALITIES = [
+  "Afghanistan","Albania","Algeria","Angola","Argentina","Armenia","Australia","Austria",
+  "Azerbaijan","Bahrain","Bangladesh","Belarus","Belgium","Benin","Bolivia","Bosnia and Herzegovina",
+  "Botswana","Brazil","Bulgaria","Burkina Faso","Cameroon","Canada","Cape Verde","Chile","China",
+  "Colombia","Congo","Costa Rica","Croatia","Cuba","Czech Republic","Côte d'Ivoire","Denmark",
+  "Dominican Republic","DR Congo","Ecuador","Egypt","England","Equatorial Guinea","Ethiopia",
+  "Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Guatemala","Guinea",
+  "Guinea-Bissau","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland",
+  "Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kosovo","Kuwait","Kyrgyzstan",
+  "Latvia","Lebanon","Liberia","Libya","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia",
+  "Mali","Malta","Mauritania","Mexico","Moldova","Montenegro","Morocco","Mozambique","Namibia",
+  "Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
+  "Oman","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia",
+  "Rwanda","Saudi Arabia","Scotland","Senegal","Serbia","Sierra Leone","Slovakia","Slovenia",
+  "Somalia","South Africa","South Korea","South Sudan","Spain","Sudan","Sweden","Switzerland",
+  "Syria","São Tomé and Príncipe","Tanzania","Thailand","Togo","Trinidad and Tobago","Tunisia",
+  "Turkey","Uganda","Ukraine","United Arab Emirates","United States","Uruguay","Uzbekistan",
+  "Venezuela","Vietnam","Wales","Zambia","Zimbabwe"
+].sort();
+
+META_LEAGUES = [
+  "Premier League","La Liga","Bundesliga","Serie A","Ligue 1","Eredivisie","Primeira Liga",
+  "Championship","Super Lig","Ekstraklasa","Czech First League","Austrian Bundesliga",
+  "Scottish Premiership","Belgian Pro League","Russian Premier League","Super League",
+  "Allsvenskan","Eliteserien","Danish Superliga","Serie B","2. Bundesliga","Ligue 2",
+  "Segunda División","Liga MX","MLS","Brasileirão","Argentine Primera División",
+  "Süper Lig","Premiership","Pro League","Super Liga","NB I","Chance Liga",
+  "Botola Pro","Persian Gulf Pro League","Saudi Pro League","Egyptian Premier League",
+  "African Cup","Indian Super League","J1 League","K League 1","A-League","Primeira Liga",
+  "Superliga","Trendyol Super Lig","TFF First League","TFF Second League"
+].sort();
+
+/* ── Load Meta from API (enriches the static lists) ─────────────────── */
 async function loadMeta() {
   try {
-    const [lr, nr] = await Promise.all([fetch('/meta/leagues'), fetch('/meta/nationalities')]);
-    const ld = await lr.json(); const nd = await nr.json();
-    META_LEAGUES = (ld.leagues || []).sort();
-    META_NATIONALITIES = (nd.nationalities || []).sort();
-  } catch(e) { console.warn('Meta failed:', e); }
+    const [lr, nr] = await Promise.all([
+      fetch('/meta/leagues').catch(() => null),
+      fetch('/meta/nationalities').catch(() => null)
+    ]);
+    if (lr && lr.ok) {
+      const ld = await lr.json();
+      const apiLeagues = ld.leagues || [];
+      if (apiLeagues.length > 0) {
+        META_LEAGUES = [...new Set([...META_LEAGUES, ...apiLeagues])].sort();
+      }
+    }
+    if (nr && nr.ok) {
+      const nd = await nr.json();
+      const apiNats = nd.nationalities || [];
+      if (apiNats.length > 0) {
+        META_NATIONALITIES = [...new Set([...META_NATIONALITIES, ...apiNats])].sort();
+      }
+    }
+  } catch(e) { console.warn('Meta API failed (using static lists):', e); }
 }
 loadMeta();
+
 
 /* ══════════════════════════════════════════════
    CUSTOM AUTOCOMPLETE DROPDOWN
