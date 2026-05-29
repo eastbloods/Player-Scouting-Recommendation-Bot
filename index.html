@@ -412,16 +412,27 @@ META_NATIONALITIES = [
 ].sort();
 
 META_LEAGUES = [
-  "Premier League","La Liga","Bundesliga","Serie A","Ligue 1","Eredivisie","Primeira Liga",
-  "Championship","Super Lig","Ekstraklasa","Czech First League","Austrian Bundesliga",
-  "Scottish Premiership","Belgian Pro League","Russian Premier League","Super League",
-  "Allsvenskan","Eliteserien","Danish Superliga","Serie B","2. Bundesliga","Ligue 2",
-  "Segunda División","Liga MX","MLS","Brasileirão","Argentine Primera División",
-  "Süper Lig","Premiership","Pro League","Super Liga","NB I","Chance Liga",
-  "Botola Pro","Persian Gulf Pro League","Saudi Pro League","Egyptian Premier League",
-  "African Cup","Indian Super League","J1 League","K League 1","A-League","Primeira Liga",
-  "Superliga","Trendyol Super Lig","TFF First League","TFF Second League"
+  // Top 5 European leagues
+  "Premier League","La Liga","Bundesliga","Serie A","Ligue 1",
+  // Other European
+  "Championship","Eredivisie","Primeira Liga","Scottish Premiership",
+  "Belgian Pro League","Austrian Bundesliga","Russian Premier League",
+  "Super League","Allsvenskan","Eliteserien","Danish Superliga",
+  "Ekstraklasa","Czech First League","NB I","Chance Liga","Super Liga",
+  "Serie B","2. Bundesliga","Ligue 2","Segunda División",
+  // Turkish (stored without brand name)
+  "Super Lig","1. Lig",
+  // Americas
+  "Liga MX","MLS","Brasileirão","Argentine Primera División","Clausura","Apertura",
+  // Middle East / Asia
+  "Saudi Pro League","Persian Gulf Pro League","Egyptian Premier League",
+  "Indian Super League","J1 League","K League 1","A-League",
+  // Africa
+  "Botola Pro","CAF Champions League",
+  // Others
+  "Premiership","Pro League","Superliga"
 ].sort();
+
 
 /* ── Load Meta from API (enriches the static lists) ─────────────────── */
 async function loadMeta() {

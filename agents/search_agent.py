@@ -9,9 +9,65 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Normalization maps ──────────────────────────────────────────────────────
+# Qdrant stores league names exactly as ingested from SportMonks.
+# The UI may send friendly/branded names that don't match exactly.
+LEAGUE_NORM: dict[str, str] = {
+    "trendyol super lig": "Super Lig",
+    "trendyol sÜper lig": "Super Lig",
+    "sÜper lig": "Super Lig",
+    "super lig": "Super Lig",
+    "turkish super lig": "Super Lig",
+    "tff 1. lig": "1. Lig",
+    "1. lig": "1. Lig",
+    "tff first league": "1. Lig",
+    "tff second league": "2. Lig",
+    "seria a": "Serie A",
+    "serie a tim": "Serie A",
+    "ligue 1 uber eats": "Ligue 1",
+    "laliga": "La Liga",
+    "la liga": "La Liga",
+    "laliga ea sports": "La Liga",
+    "sky bet championship": "Championship",
+    "efl championship": "Championship",
+    "premier league": "Premier League",
+    "english premier league": "Premier League",
+    "bpl": "Premier League",
+    "bundesliga 1": "Bundesliga",
+    "saudi pro league": "Saudi Pro League",
+    "roshn saudi league": "Saudi Pro League",
+}
+
+# Nationality names — Qdrant stores the SportMonks value (often English)
+NAT_NORM: dict[str, str] = {
+    "turkey": "Turkey",
+    "tÜrkiye": "Turkey",
+    "turkiye": "Turkey",
+    "türkiye": "Turkey",
+    "england": "England",
+    "united states": "United States",
+    "usa": "United States",
+    "south korea": "South Korea",
+    "korea republic": "South Korea",
+    "ivory coast": "Côte d'Ivoire",
+    "cote d'ivoire": "Côte d'Ivoire",
+    "czech republic": "Czech Republic",
+    "czechia": "Czech Republic",
+    "dr congo": "DR Congo",
+    "democratic republic of congo": "DR Congo",
+}
+
+
+def _norm_league(v: str) -> str:
+    return LEAGUE_NORM.get(v.lower().strip(), v.strip())
+
+
+def _norm_nationality(v: str) -> str:
+    return NAT_NORM.get(v.lower().strip(), v.strip())
 
 def _extract_numeric_from_query(query: str) -> dict:
     """Reliably extract age/height constraints via regex — faster and more accurate than LLM."""
+
     result = {}
     q = query.lower()
     # Max age: "under 25", "u25", "younger than 25", "aged under 25", "no older than 25"
@@ -107,13 +163,13 @@ def _merge_filters(
     if ui_max_height is not None:
         must.append(FieldCondition(key="height", range=Range(lte=ui_max_height)))
 
-    # Nationality
+    # Nationality — normalise before exact match
     if ui_nationality:
-        must.append(FieldCondition(key="nationality", match=MatchValue(value=ui_nationality)))
+        must.append(FieldCondition(key="nationality", match=MatchValue(value=_norm_nationality(ui_nationality))))
 
-    # League
+    # League — normalise before exact match (SportMonks names vs branded names)
     if ui_league:
-        must.append(FieldCondition(key="league", match=MatchValue(value=ui_league)))
+        must.append(FieldCondition(key="league", match=MatchValue(value=_norm_league(ui_league))))
 
     if not must and not should:
         return None
@@ -196,9 +252,10 @@ def search_augmentation(
                 ))
             ])
             result_text = response.content.strip()
-            if result_text and '|' in result_text:
+            # Accept any non-empty response (don't require |, LLM sometimes uses different separators)
+            if result_text and len(result_text) > 30:
                 return result_text
-            print(f"LLM attempt {attempt+1} returned unexpected format, retrying...")
+            print(f"LLM attempt {attempt+1} returned too-short response, retrying...")
         except Exception as e:
             print(f"LLM formatting error (attempt {attempt+1}): {e}")
 
@@ -213,20 +270,20 @@ def _condense_profile(raw: str) -> str:
     lines = raw.strip().split('\n')
     first_line = lines[0] if lines else raw[:200]
 
-    # Extract stats
-    rating_m = re.search(r'avg rating (\d+\.\d+)', raw)
-    rating = rating_m.group(1) if rating_m else 'N/A'
-    goals_m = re.search(r'(\d+) goals', raw)
-    assists_m = re.search(r'(\d+) assists', raw)
-    shots_m = re.search(r'(\d+) shots', raw)
-    tackles_m = re.search(r'(\d+) tackles', raw)
-    aerials_m = re.search(r'(\d+) aerials won', raw)
-    dribbles_m = re.search(r'(\d+)/\d+ dribbles', raw)
+    # Extract stats — NOTE: exclude "goals conceded" (defensive stat, not goals scored)
+    rating_m    = re.search(r'avg rating (\d+\.\d+)', raw)
+    rating      = rating_m.group(1) if rating_m else 'N/A'
+    goals_m     = re.search(r'(\d+) goals(?! conceded)', raw)  # scored goals only
+    assists_m   = re.search(r'(\d+) assists', raw)
+    shots_m     = re.search(r'(\d+) shots', raw)
+    tackles_m   = re.search(r'(\d+) tackles', raw)
+    aerials_m   = re.search(r'(\d+) aerials won', raw)
+    dribbles_m  = re.search(r'(\d+)/\d+ dribbles', raw)
     key_passes_m = re.search(r'(\d+) key passes', raw)
-    app_m = re.search(r'(\d+) appearances', raw)
-    mins_m = re.search(r'(\d+) minutes', raw)
-    pass_acc_m = re.search(r'([\d.]+)% accuracy', raw)
-    big_m = re.search(r'(\d+) big chances', raw)
+    app_m       = re.search(r'(\d+) appearances', raw)
+    mins_m      = re.search(r'(\d+) minutes', raw)
+    pass_acc_m  = re.search(r'([\d.]+)% accuracy', raw)
+    big_m       = re.search(r'(\d+) big chances', raw)
 
     stats = []
     if goals_m: stats.append(f"{goals_m.group(1)} goals")
@@ -274,7 +331,7 @@ def _fallback_format(results: list[str]) -> str:
 
         rating_m   = re.search(r'avg rating (\d+\.\d+)', raw)
         rating     = rating_m.group(1) if rating_m else 'N/A'
-        goals_m    = re.search(r'(\d+) goals', raw)
+        goals_m    = re.search(r'(\d+) goals(?! conceded)', raw)  # scored goals only
         assists_m  = re.search(r'(\d+) assists', raw)
         shots_m    = re.search(r'(\d+) shots', raw)
         tackles_m  = re.search(r'(\d+) tackles', raw)
