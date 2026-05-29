@@ -134,7 +134,7 @@ def search_augmentation(
 
     # Step 3: Semantic retrieval
     try:
-        results = qdrant_retriever(content or "football player", final_filter, top_k=25)
+        results = qdrant_retriever(content or "football player", final_filter, top_k=20)
     except Exception as e:
         print(f"Retriever error: {e}")
         return "Search temporarily unavailable. Please try again."
@@ -142,8 +142,12 @@ def search_augmentation(
     if not results:
         return "No players found matching your criteria."
 
-    # Step 4: LLM formats results
-    profiles = "\n\n---\n".join(results)
+    # Step 4: Condense profiles for LLM (avoid token overflow)
+    condensed = []
+    for r in results:
+        condensed.append(_condense_profile(r))
+
+    profiles = "\n\n".join(condensed)
     try:
         response = llm.invoke(
             f"{SYSTEM_PROMPT}\n\n"
@@ -154,4 +158,87 @@ def search_augmentation(
         return response.content
     except Exception as e:
         print(f"LLM formatting error: {e}")
-        return "\n\n".join(results[:5])
+        # Build parser-friendly fallback from raw data
+        return _fallback_format(results)
+
+
+def _condense_profile(raw: str) -> str:
+    """Extract key fields from a raw profile to reduce token count."""
+    import re
+    lines = raw.strip().split('\n')
+    first_line = lines[0] if lines else raw[:200]
+
+    # Extract stats
+    rating_m = re.search(r'avg rating (\d+\.\d+)', raw)
+    rating = rating_m.group(1) if rating_m else 'N/A'
+    goals_m = re.search(r'(\d+) goals', raw)
+    assists_m = re.search(r'(\d+) assists', raw)
+    shots_m = re.search(r'(\d+) shots', raw)
+    tackles_m = re.search(r'(\d+) tackles', raw)
+    aerials_m = re.search(r'(\d+) aerials won', raw)
+    dribbles_m = re.search(r'(\d+)/\d+ dribbles', raw)
+    key_passes_m = re.search(r'(\d+) key passes', raw)
+    app_m = re.search(r'(\d+) appearances', raw)
+    mins_m = re.search(r'(\d+) minutes', raw)
+    pass_acc_m = re.search(r'([\d.]+)% accuracy', raw)
+    big_m = re.search(r'(\d+) big chances', raw)
+
+    stats = []
+    if goals_m: stats.append(f"{goals_m.group(1)} goals")
+    if assists_m: stats.append(f"{assists_m.group(1)} assists")
+    if shots_m: stats.append(f"{shots_m.group(1)} shots")
+    if tackles_m: stats.append(f"{tackles_m.group(1)} tackles")
+    if aerials_m: stats.append(f"{aerials_m.group(1)} aerials won")
+    if key_passes_m: stats.append(f"{key_passes_m.group(1)} key passes")
+    if dribbles_m: stats.append(f"{dribbles_m.group(1)} dribbles")
+    if big_m: stats.append(f"{big_m.group(1)} big chances created")
+    if pass_acc_m: stats.append(f"{pass_acc_m.group(1)}% pass accuracy")
+
+    stat_line = ', '.join(stats[:6]) if stats else 'no detailed stats'
+    app_info = ''
+    if app_m: app_info += f"{app_m.group(1)} apps"
+    if mins_m: app_info += f", {mins_m.group(1)} min"
+
+    return f"{first_line}\nRating: {rating}. {app_info}. Key stats: {stat_line}."
+
+
+def _fallback_format(results: list[str]) -> str:
+    """When LLM fails, build pipe-separated format from raw profiles."""
+    import re
+    output = []
+    for raw in results[:15]:
+        lines = raw.strip().split('\n')
+        first = lines[0] if lines else ''
+
+        name_m = re.match(r'^(.+?)\s*[–-]\s*(\d+)\s*years?\s*old,\s*(\d+)\s*cm,\s*(.+?),\s*nationality:\s*(.+?),\s*(.+?),\s*(.+?)\.', first)
+        if not name_m:
+            continue
+
+        name = name_m.group(1).strip()
+        if name == 'None' or not name:
+            continue
+
+        age = name_m.group(2)
+        pos = name_m.group(4).strip()
+        club = name_m.group(6).strip()
+        league = name_m.group(7).strip()
+
+        rating_m = re.search(r'avg rating (\d+\.\d+)', raw)
+        rating = rating_m.group(1) if rating_m else 'N/A'
+
+        goals_m = re.search(r'(\d+) goals', raw)
+        tackles_m = re.search(r'(\d+) tackles', raw)
+        aerials_m = re.search(r'(\d+) aerials won', raw)
+
+        stats = []
+        if goals_m: stats.append(f"{goals_m.group(1)} goals")
+        if tackles_m: stats.append(f"{tackles_m.group(1)} tackles")
+        if aerials_m: stats.append(f"{aerials_m.group(1)} aerials")
+
+        output.append(
+            f"{name} | {age}, {club} ({league}) | {pos} | ★ Rating {rating} | Key: {', '.join(stats) or 'N/A'}\n"
+            f"→ Matched from database."
+        )
+
+    return '\n'.join(output) if output else "No players found matching your criteria."
+
