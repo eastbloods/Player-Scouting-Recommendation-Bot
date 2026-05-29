@@ -8,113 +8,109 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <style>
-    :root {
-      --bg:       #080c18;
-      --bg-card:  #0f1629;
-      --bg-el:    #141c30;
-      --bg-stat:  #1a2540;
-      --accent:   #22c55e;
-      --accent-d: rgba(34,197,94,.12);
-      --accent-b: rgba(34,197,94,.3);
-      --blue:     #3b82f6;
-      --blue-d:   rgba(59,130,246,.12);
-      --amber:    #f59e0b;
-      --amber-d:  rgba(245,158,11,.12);
-      --red-d:    rgba(239,68,68,.12);
-      --purple-d: rgba(168,85,247,.12);
-      --t1: #f1f5f9; --t2: #94a3b8; --t3: #475569;
-      --border: #1e2d45;
-      --r: 12px;
+    :root{
+      --bg:#080c18; --bg-card:#0f1629; --bg-el:#141c30; --bg-stat:#1a2540;
+      --accent:#22c55e; --accent-d:rgba(34,197,94,.12); --accent-b:rgba(34,197,94,.3);
+      --blue:#3b82f6; --blue-d:rgba(59,130,246,.12); --blue-b:rgba(59,130,246,.3);
+      --amber:#f59e0b; --amber-d:rgba(245,158,11,.12); --amber-b:rgba(245,158,11,.3);
+      --red:#ef4444; --red-d:rgba(239,68,68,.12); --red-b:rgba(239,68,68,.3);
+      --purple:#a855f7; --purple-d:rgba(168,85,247,.12); --purple-b:rgba(168,85,247,.3);
+      --t1:#f1f5f9; --t2:#94a3b8; --t3:#475569; --border:#1e2d45; --r:12px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
 
     /* Header */
-    header{padding:1rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(8,12,24,.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+    header{padding:1rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(8,12,24,.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
     .logo{display:flex;align-items:center;gap:.5rem}
     .logo-text{font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
     .logo-badge{font-size:.62rem;font-weight:700;background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-b);padding:.12rem .45rem;border-radius:999px}
     nav a{color:var(--t3);text-decoration:none;font-size:.85rem;font-weight:500;margin-left:1.5rem;transition:color .2s}
     nav a:hover{color:var(--accent)}
 
-    main{flex:1;max-width:1280px;margin:0 auto;width:100%;padding:2rem 1.5rem 4rem}
+    main{flex:1;max-width:1300px;margin:0 auto;width:100%;padding:2rem 1.5rem 5rem}
 
-    /* Hero */
-    .hero{text-align:center;margin-bottom:1.75rem}
+    .hero{text-align:center;margin-bottom:1.5rem}
     .hero h1{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;letter-spacing:-.03em;line-height:1.2;margin-bottom:.5rem}
     .hero h1 span{color:var(--accent)}
     .hero p{color:var(--t2);font-size:.9rem;max-width:460px;margin:0 auto}
 
     /* Search bar */
     .search-row{display:flex;gap:.6rem;margin-bottom:1rem}
-    .search-wrap{flex:1;position:relative}
-    .s-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
-    #search-input{width:100%;height:50px;background:var(--bg-el);border:1.5px solid var(--border);color:var(--t1);padding:0 1rem 0 2.5rem;border-radius:var(--r);font-family:inherit;font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
-    #search-input:focus{border-color:var(--accent-b);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
-    #search-input::placeholder{color:var(--t3)}
-    #scout-btn{min-width:120px;background:var(--accent);color:#fff;border:none;height:50px;padding:0 1.25rem;border-radius:var(--r);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:.4rem;justify-content:center}
-    #scout-btn:hover:not(:disabled){background:#16a34a;transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,197,94,.35)}
-    #scout-btn:disabled{background:var(--border);color:var(--t3);cursor:not-allowed}
+    .sw{flex:1;position:relative}
+    .si{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none;font-size:.95rem}
+    #q{width:100%;height:50px;background:var(--bg-el);border:1.5px solid var(--border);color:var(--t1);padding:0 1rem 0 2.5rem;border-radius:var(--r);font-family:inherit;font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
+    #q:focus{border-color:var(--accent-b);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+    #q::placeholder{color:var(--t3)}
+    #sb{min-width:120px;background:var(--accent);color:#fff;border:none;height:50px;padding:0 1.25rem;border-radius:var(--r);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:.4rem;justify-content:center}
+    #sb:hover:not(:disabled){background:#16a34a;transform:translateY(-1px);box-shadow:0 4px 14px rgba(34,197,94,.35)}
+    #sb:disabled{background:var(--border);color:var(--t3);cursor:not-allowed}
 
-    /* Filter Card */
-    .filter-card{background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:1.25rem;overflow:hidden}
-    .filter-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;cursor:pointer;user-select:none;transition:background .15s}
-    .filter-header:hover{background:rgba(255,255,255,.02)}
-    .fh-left{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:600;color:var(--t2)}
-    .fh-badge{background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-b);font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:999px;display:none}
-    .fh-badge.visible{display:inline}
-    .fh-arrow{color:var(--t3);font-size:.75rem;transition:transform .2s}
-    .fh-arrow.open{transform:rotate(180deg)}
+    /* Filter panel */
+    .fp{background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:1.25rem}
+    .fph{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;cursor:pointer;user-select:none;border-radius:var(--r)}
+    .fph:hover{background:rgba(255,255,255,.02)}
+    .fph-left{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:600;color:var(--t2)}
+    .fph-badge{background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-b);font-size:.64rem;font-weight:700;padding:.1rem .4rem;border-radius:999px;display:none}
+    .fph-badge.on{display:inline}
+    .fph-arrow{color:var(--t3);font-size:.75rem;transition:transform .2s}
+    .fph-arrow.open{transform:rotate(180deg)}
+    .fpb{padding:0 1.25rem;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+    .fpb.open{max-height:1200px;padding:0 1.25rem 1.25rem}
 
-    .filter-body{padding:0 1.25rem;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
-    .filter-body.open{max-height:800px;padding:0 1.25rem 1.25rem}
+    /* Section headers inside filters */
+    .fs-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin:1rem 0 .5rem}
+    .fs-label:first-child{margin-top:.25rem}
 
-    /* Position grid */
-    .section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:.5rem;margin-top:.75rem}
-    .pos-grid{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.25rem}
-    .pb{padding:.3rem .7rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg-stat);color:var(--t2);transition:all .15s}
-    .pb:hover{color:var(--t1);border-color:var(--t3)}
-    .pb.on.gk{background:var(--purple-d);border-color:rgba(168,85,247,.4);color:#c084fc}
-    .pb.on.def{background:var(--blue-d);border-color:rgba(59,130,246,.4);color:var(--blue)}
-    .pb.on.mid{background:var(--amber-d);border-color:rgba(245,158,11,.4);color:var(--amber)}
-    .pb.on.att{background:var(--red-d);border-color:rgba(239,68,68,.4);color:#f87171}
+    /* Hierarchical position selector */
+    .pos-level1{display:flex;gap:.4rem;flex-wrap:wrap}
+    .pos-level2{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem;padding:.6rem .75rem;background:var(--bg-stat);border-radius:8px;border:1px solid var(--border)}
+    .pos-level2.hidden{display:none}
+    .pb1{padding:.35rem .9rem;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg-stat);color:var(--t2);transition:all .15s;min-width:52px;text-align:center}
+    .pb1:hover{color:var(--t1);border-color:var(--t3)}
+    .pb1.on.gk{background:var(--purple-d);border-color:var(--purple-b);color:var(--purple)}
+    .pb1.on.def{background:var(--blue-d);border-color:var(--blue-b);color:var(--blue)}
+    .pb1.on.mid{background:var(--amber-d);border-color:var(--amber-b);color:var(--amber)}
+    .pb1.on.att{background:var(--red-d);border-color:var(--red-b);color:var(--red)}
+    .pb2{padding:.25rem .65rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg-el);color:var(--t2);transition:all .15s}
+    .pb2:hover{color:var(--t1);border-color:var(--t3)}
+    .pb2.on.gk{background:var(--purple-d);border-color:var(--purple-b);color:var(--purple)}
+    .pb2.on.def{background:var(--blue-d);border-color:var(--blue-b);color:var(--blue)}
+    .pb2.on.mid{background:var(--amber-d);border-color:var(--amber-b);color:var(--amber)}
+    .pb2.on.att{background:var(--red-d);border-color:var(--red-b);color:var(--red)}
 
     /* Number inputs */
-    .inputs-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem;margin-top:.75rem}
-    @media(max-width:700px){.inputs-row{grid-template-columns:1fr 1fr}}
-    .num-group{display:flex;flex-direction:column;gap:.35rem}
-    .num-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
-    .num-pair{display:flex;align-items:center;gap:.35rem}
-    .num-pair span{color:var(--t3);font-size:.8rem;flex-shrink:0}
-    .num-input{width:100%;background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.4rem .6rem;border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;transition:border-color .2s;min-width:0}
-    .num-input:focus{border-color:var(--accent-b)}
-    .num-input::placeholder{color:var(--t3)}
-    .num-input::-webkit-inner-spin-button{opacity:.5}
+    .num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem}
+    @media(max-width:700px){.num-grid{grid-template-columns:1fr 1fr}}
+    .ng{display:flex;flex-direction:column;gap:.3rem}
+    .ng-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+    .ni{width:100%;background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.4rem .6rem;border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;transition:border-color .2s}
+    .ni:focus{border-color:var(--accent-b)}
+    .ni::placeholder{color:var(--t3)}
+    .ni::-webkit-inner-spin-button{opacity:.5}
 
-    /* Autocomplete inputs */
-    .ac-group{display:flex;flex-direction:column;gap:.35rem}
-    .ac-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
-    .ac-input{width:100%;background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.4rem .6rem;border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;transition:border-color .2s}
-    .ac-input:focus{border-color:var(--accent-b)}
-    .ac-input::placeholder{color:var(--t3)}
-    .ac-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem}
-    @media(max-width:700px){.ac-row{grid-template-columns:1fr}}
+    /* Multi-tag inputs */
+    .tag-area{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem}
+    @media(max-width:700px){.tag-area{grid-template-columns:1fr}}
+    .tag-group{display:flex;flex-direction:column;gap:.3rem}
+    .tag-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+    .tag-input-wrap{background:var(--bg-stat);border:1.5px solid var(--border);border-radius:8px;display:flex;flex-wrap:wrap;gap:.3rem;padding:.35rem .5rem;min-height:36px;cursor:text;transition:border-color .2s}
+    .tag-input-wrap:focus-within{border-color:var(--accent-b)}
+    .tag{display:flex;align-items:center;gap:.3rem;background:var(--bg-el);border:1px solid var(--border);color:var(--t1);padding:.15rem .5rem;border-radius:5px;font-size:.75rem;font-weight:500}
+    .tag-x{cursor:pointer;color:var(--t3);font-size:.7rem;line-height:1;padding:.05rem}
+    .tag-x:hover{color:var(--red)}
+    .tag-input{background:none;border:none;outline:none;color:var(--t1);font-family:inherit;font-size:.82rem;min-width:80px;flex:1}
+    .tag-input::placeholder{color:var(--t3)}
+    .tag-datalist-dropdown{position:relative}
 
     /* Filter actions */
-    .filter-actions{display:flex;align-items:center;gap:.75rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border)}
-    .filter-summary{flex:1;font-size:.78rem;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .clear-btn{background:none;border:1px solid var(--border);color:var(--t3);padding:.35rem .8rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
-    .clear-btn:hover{border-color:var(--t3);color:var(--t1)}
-
-    /* Post-search refinement bar */
-    .refine-bar{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
-    .refine-label{font-size:.78rem;color:var(--t2);font-weight:600;white-space:nowrap}
-    .refine-input{flex:1;min-width:160px;background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.35rem .7rem;border-radius:8px;font-family:inherit;font-size:.82rem;outline:none;transition:border-color .2s}
-    .refine-input:focus{border-color:var(--accent-b)}
-    .refine-input::placeholder{color:var(--t3)}
-    .refine-count{font-size:.78rem;color:var(--t3);white-space:nowrap}
+    .fa{display:flex;align-items:center;gap:.65rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border)}
+    .fa-sum{flex:1;font-size:.78rem;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fa-apply{background:var(--accent);color:#fff;border:none;padding:.4rem .9rem;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .fa-apply:hover{background:#16a34a}
+    .fa-clear{background:none;border:1px solid var(--border);color:var(--t3);padding:.4rem .9rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .fa-clear:hover{border-color:var(--t3);color:var(--t1)}
 
     /* Example chips */
     .chips{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:2rem}
@@ -125,51 +121,72 @@
     .hidden{display:none!important}
     .empty-state{text-align:center;color:var(--t3);padding:4rem 0}
     .empty-state .icon{font-size:3rem;display:block;margin-bottom:1rem}
-    .empty-state h2{font-size:1.15rem;font-weight:600;color:var(--t2);margin-bottom:.4rem}
+    .empty-state h2{font-size:1.1rem;font-weight:600;color:var(--t2);margin-bottom:.4rem}
     .error-state{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r);padding:1.5rem;text-align:center;color:#fca5a5}
-    .skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-    .sk-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;display:flex;gap:.9rem;animation:pulse 1.5s infinite}
-    .sk-av{width:52px;height:52px;border-radius:50%;background:var(--border);flex-shrink:0}
-    .sk-lines{flex:1;display:flex;flex-direction:column;gap:.55rem;padding-top:.2rem}
+
+    /* Skeleton */
+    .sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .sk-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;display:flex;gap:.8rem;animation:pulse 1.5s infinite}
+    .sk-av{width:48px;height:48px;border-radius:50%;background:var(--border);flex-shrink:0}
+    .sk-lines{flex:1;display:flex;flex-direction:column;gap:.5rem;padding-top:.1rem}
     .sk{height:.82rem;background:var(--border);border-radius:4px}
     .sk.w70{width:70%}.sk.w50{width:50%}.sk.w85{width:85%}
     @keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
 
     /* Results */
-    .results-hdr{font-size:.85rem;color:var(--t2);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-    .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+    .results-wrap{display:flex;gap:1.25rem;align-items:flex-start}
+    .refine-side{width:240px;flex-shrink:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1rem;position:sticky;top:80px}
+    .refine-side h4{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:.6rem}
+    .ri{width:100%;background:var(--bg-stat);border:1.5px solid var(--border);color:var(--t1);padding:.4rem .65rem;border-radius:8px;font-family:inherit;font-size:.82rem;outline:none;transition:border-color .2s;margin-bottom:.5rem}
+    .ri:focus{border-color:var(--accent-b)}
+    .ri::placeholder{color:var(--t3)}
+    .refine-count{font-size:.75rem;color:var(--t3);margin-top:.35rem}
+    .results-main{flex:1;min-width:0}
+    .results-hdr{font-size:.85rem;color:var(--t2);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+    .rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.9rem}
+
+    @media(max-width:900px){.results-wrap{flex-direction:column}.refine-side{width:100%;position:static}}
 
     /* Player Card */
-    .player-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.75rem;transition:border-color .2s,box-shadow .2s,transform .2s;animation:fadeUp .35s ease backwards}
-    .player-card:hover{border-color:var(--accent-b);box-shadow:0 4px 20px rgba(34,197,94,.1);transform:translateY(-2px)}
-    .card-top{display:flex;align-items:flex-start;gap:.75rem}
-    .avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:-.02em}
-    .card-info{flex:1;min-width:0}
-    .player-name{font-size:.95rem;font-weight:700;color:var(--t1);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pos-badge{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.18rem .45rem;border-radius:5px;white-space:nowrap;margin-top:.2rem;display:inline-block}
-    .badge-gk{background:var(--purple-d);color:#c084fc;border:1px solid rgba(168,85,247,.3)}
-    .badge-def{background:var(--blue-d);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
-    .badge-mid{background:var(--amber-d);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
-    .badge-att{background:var(--red-d);color:#f87171;border:1px solid rgba(239,68,68,.3)}
-    .badge-default{background:var(--bg-stat);color:var(--t2);border:1px solid var(--border)}
-    .card-meta{font-size:.8rem;color:var(--t2);display:flex;flex-direction:column;gap:.15rem}
-    .card-meta .main-line{color:var(--t1);font-weight:500}
+    .pc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1rem;display:flex;flex-direction:column;gap:.7rem;transition:border-color .2s,box-shadow .2s,transform .2s;animation:fadeUp .35s ease backwards;cursor:default}
+    .pc:hover{border-color:var(--accent-b);box-shadow:0 4px 20px rgba(34,197,94,.08);transform:translateY(-2px)}
+
+    /* Card top row */
+    .ct{display:flex;align-items:flex-start;gap:.75rem}
+    .av{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#fff;letter-spacing:-.02em;font-style:normal}
+
+    .ci{flex:1;min-width:0}
+    .pn{font-size:.95rem;font-weight:700;color:var(--t1);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.25rem}
+
+    /* Position tags */
+    .ptags{display:flex;gap:.3rem;flex-wrap:wrap}
+    .ptag{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.15rem .42rem;border-radius:5px;white-space:nowrap}
+    .ptag.main.gk{background:var(--purple-d);color:var(--purple);border:1px solid var(--purple-b)}
+    .ptag.main.def{background:var(--blue-d);color:var(--blue);border:1px solid var(--blue-b)}
+    .ptag.main.mid{background:var(--amber-d);color:var(--amber);border:1px solid var(--amber-b)}
+    .ptag.main.att{background:var(--red-d);color:var(--red);border:1px solid var(--red-b)}
+    .ptag.sub{background:var(--bg-stat);color:var(--t2);border:1px solid var(--border)}
+
+    /* Card meta */
+    .cm{display:grid;grid-template-columns:1fr 1fr;gap:.25rem .5rem;font-size:.78rem;color:var(--t2)}
+    .cm-item{display:flex;align-items:center;gap:.3rem}
+    .cm-item span:first-child{color:var(--t3);font-size:.7rem}
+
+    /* Stats row */
     .divider{height:1px;background:var(--border)}
-    .stats-row{display:flex;flex-wrap:wrap;gap:.35rem}
-    .rating-pill{font-size:.68rem;font-weight:700;background:var(--accent-d);border:1px solid var(--accent-b);color:var(--accent);padding:.18rem .5rem;border-radius:5px}
-    .stat-pill{font-size:.68rem;font-weight:600;background:var(--bg-stat);border:1px solid var(--border);color:var(--t2);padding:.18rem .5rem;border-radius:5px}
-    .scout-note{font-size:.76rem;color:var(--t3);font-style:italic;line-height:1.5;border-left:2px solid var(--accent-b);padding-left:.55rem}
+    .sr{display:flex;flex-wrap:wrap;gap:.3rem}
+    .rp{font-size:.68rem;font-weight:700;background:var(--accent-d);border:1px solid var(--accent-b);color:var(--accent);padding:.18rem .48rem;border-radius:5px}
+    .sp{font-size:.68rem;font-weight:600;background:var(--bg-stat);border:1px solid var(--border);color:var(--t2);padding:.18rem .48rem;border-radius:5px}
+
+    /* Scout note */
+    .sn{font-size:.75rem;color:var(--t3);font-style:italic;line-height:1.5;border-left:2px solid var(--accent-b);padding-left:.5rem}
 
     footer{text-align:center;padding:2rem;color:var(--t3);font-size:.73rem;border-top:1px solid var(--border)}
     footer a{color:inherit;text-decoration:none;transition:color .2s}
     footer a:hover{color:var(--t2)}
 
-    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    @media(max-width:640px){
-      .search-row{flex-direction:column}
-      #scout-btn{width:100%;height:48px}
-      header{flex-direction:column;gap:.6rem;align-items:flex-start}
-    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:640px){.search-row{flex-direction:column}#sb{width:100%;height:48px}header{flex-direction:column;gap:.6rem;align-items:flex-start}}
   </style>
 </head>
 <body>
@@ -181,8 +198,8 @@
     <span class="logo-badge">AI BETA</span>
   </div>
   <nav>
-    <a href="/docs" target="_blank" rel="noopener">API Docs</a>
-    <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener">GitHub</a>
+    <a href="/docs" target="_blank">API Docs</a>
+    <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank">GitHub</a>
   </nav>
 </header>
 
@@ -194,103 +211,92 @@
 
   <!-- Search -->
   <div class="search-row">
-    <div class="search-wrap">
-      <span class="s-icon">🔍</span>
-      <input id="search-input" type="text" placeholder="e.g. box-to-box midfielder high pressing, creative passer…">
+    <div class="sw"><span class="si">🔍</span>
+      <input id="q" type="text" placeholder="e.g. box-to-box midfielder high pressing, creative passer under 26…">
     </div>
-    <button id="scout-btn">⚡ Scout</button>
+    <button id="sb">⚡ Scout</button>
   </div>
 
-  <!-- Filter Card -->
-  <div class="filter-card">
-    <div class="filter-header" id="filter-header">
-      <span class="fh-left">
-        🎛️ Filters
-        <span class="fh-badge" id="fh-badge">0</span>
-      </span>
-      <span class="fh-arrow" id="fh-arrow">▼</span>
+  <!-- Filter Panel -->
+  <div class="fp">
+    <div class="fph" id="fph">
+      <span class="fph-left">🎛️ Filters <span class="fph-badge" id="fhb">0</span></span>
+      <span class="fph-arrow" id="fha">▼</span>
     </div>
+    <div class="fpb" id="fpb">
 
-    <div class="filter-body" id="filter-body">
-
-      <!-- Position -->
-      <div class="section-label">Position</div>
-      <div class="pos-grid" id="pos-grid">
-        <button class="pb gk"  data-pos="goalkeeper">GK</button>
-        <button class="pb def" data-pos="centre-back">CB</button>
-        <button class="pb def" data-pos="right-back">RB</button>
-        <button class="pb def" data-pos="left-back">LB</button>
-        <button class="pb def" data-pos="defender">DEF</button>
-        <button class="pb mid" data-pos="defensive midfielder">DM</button>
-        <button class="pb mid" data-pos="central midfielder">CM</button>
-        <button class="pb mid" data-pos="attacking midfielder">AM</button>
-        <button class="pb mid" data-pos="midfielder">MID</button>
-        <button class="pb att" data-pos="winger">WIN</button>
-        <button class="pb att" data-pos="striker">ST</button>
-        <button class="pb att" data-pos="attacker">ATT</button>
+      <!-- Position — level 1 -->
+      <div class="fs-label">Position — broad</div>
+      <div class="pos-level1" id="pl1">
+        <button class="pb1 gk"  data-cat="gk"  data-pos="goalkeeper">GK</button>
+        <button class="pb1 def" data-cat="def" data-pos="defender">DEF</button>
+        <button class="pb1 mid" data-cat="mid" data-pos="midfielder">MID</button>
+        <button class="pb1 att" data-cat="att" data-pos="attacker">ATT</button>
       </div>
 
-      <!-- Age & Height number inputs -->
-      <div class="section-label" style="margin-top:1rem">Age & Height</div>
-      <div class="inputs-row">
-        <div class="num-group">
-          <div class="num-label">Min Age</div>
-          <input type="number" class="num-input" id="age-min" placeholder="e.g. 18" min="16" max="45">
-        </div>
-        <div class="num-group">
-          <div class="num-label">Max Age</div>
-          <input type="number" class="num-input" id="age-max" placeholder="e.g. 25" min="16" max="45">
-        </div>
-        <div class="num-group">
-          <div class="num-label">Min Height (cm)</div>
-          <input type="number" class="num-input" id="height-min" placeholder="e.g. 185" min="155" max="215">
-        </div>
-        <div class="num-group">
-          <div class="num-label">Max Height (cm)</div>
-          <input type="number" class="num-input" id="height-max" placeholder="e.g. 200" min="155" max="215">
-        </div>
+      <!-- Position — level 2 (dynamic) -->
+      <div class="pos-level2 hidden" id="pl2"></div>
+
+      <!-- Age & Height -->
+      <div class="fs-label">Age & Height</div>
+      <div class="num-grid">
+        <div class="ng"><div class="ng-label">Min Age</div>
+          <input type="number" class="ni" id="amin" placeholder="e.g. 18" min="16" max="45"></div>
+        <div class="ng"><div class="ng-label">Max Age</div>
+          <input type="number" class="ni" id="amax" placeholder="e.g. 25" min="16" max="45"></div>
+        <div class="ng"><div class="ng-label">Min Height cm</div>
+          <input type="number" class="ni" id="hmin" placeholder="e.g. 185" min="155" max="215"></div>
+        <div class="ng"><div class="ng-label">Max Height cm</div>
+          <input type="number" class="ni" id="hmax" placeholder="e.g. 200" min="155" max="215"></div>
       </div>
 
-      <!-- Nationality & League autocomplete -->
-      <div class="section-label" style="margin-top:1rem">Nationality & League</div>
-      <div class="ac-row">
-        <div class="ac-group">
-          <div class="ac-label">Nationality</div>
-          <input type="search" class="ac-input" id="nat-input" placeholder="e.g. France, Brazil…" autocomplete="off" list="nat-list">
-          <datalist id="nat-list"></datalist>
+      <!-- Nationality / League / Team tags -->
+      <div class="fs-label">Nationality · League · Team</div>
+      <div class="tag-area">
+        <div class="tag-group">
+          <div class="tag-label">Nationality</div>
+          <div class="tag-input-wrap" id="nat-wrap">
+            <input type="text" class="tag-input" id="nat-in" placeholder="Type country…" autocomplete="off" list="nat-dl">
+            <datalist id="nat-dl"></datalist>
+          </div>
         </div>
-        <div class="ac-group">
-          <div class="ac-label">League</div>
-          <input type="search" class="ac-input" id="league-input" placeholder="e.g. Premier League, Ligue 1…" autocomplete="off" list="league-list">
-          <datalist id="league-list"></datalist>
+        <div class="tag-group">
+          <div class="tag-label">League</div>
+          <div class="tag-input-wrap" id="lea-wrap">
+            <input type="text" class="tag-input" id="lea-in" placeholder="Type league…" autocomplete="off" list="lea-dl">
+            <datalist id="lea-dl"></datalist>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-label">Team</div>
+          <div class="tag-input-wrap" id="team-wrap">
+            <input type="text" class="tag-input" id="team-in" placeholder="Type team name…" autocomplete="off">
+          </div>
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="filter-actions">
-        <span class="filter-summary" id="filter-summary"></span>
-        <button class="clear-btn" id="clear-btn">✕ Clear all</button>
+      <div class="fa">
+        <span class="fa-sum" id="fa-sum"></span>
+        <button class="fa-clear" id="fa-clear">✕ Clear</button>
+        <button class="fa-apply" id="fa-apply">Apply Filters</button>
       </div>
     </div>
   </div>
 
-  <!-- Example chips -->
+  <!-- Chips -->
   <div class="chips" id="chips"></div>
 
-  <!-- Empty -->
-  <div id="empty-state" class="empty-state">
+  <!-- States -->
+  <div id="empty" class="empty-state">
     <span class="icon">🎯</span>
     <h2>Start scouting</h2>
-    <p>Type a natural language query or set filters above.</p>
+    <p>Type a query, set filters, or both.</p>
   </div>
-
-  <div id="error-state" class="error-state hidden">
-    <h3>⚠️ Something went wrong</h3>
-    <p>The API may be starting up. Try again in a moment.</p>
+  <div id="err" class="error-state hidden">
+    <h3>⚠️ Something went wrong</h3><p>Try again in a moment.</p>
   </div>
-
-  <!-- Skeleton -->
-  <div id="loading-state" class="skeleton-grid hidden">
+  <div id="loading" class="sk-grid hidden">
     <div class="sk-card"><div class="sk-av"></div><div class="sk-lines"><div class="sk w70"></div><div class="sk w50"></div><div class="sk w85"></div><div class="sk w50"></div></div></div>
     <div class="sk-card"><div class="sk-av"></div><div class="sk-lines"><div class="sk w70"></div><div class="sk w50"></div><div class="sk w85"></div><div class="sk w50"></div></div></div>
     <div class="sk-card"><div class="sk-av"></div><div class="sk-lines"><div class="sk w70"></div><div class="sk w50"></div><div class="sk w85"></div><div class="sk w50"></div></div></div>
@@ -298,23 +304,27 @@
 
   <!-- Results -->
   <div id="results-area" class="hidden">
-    <!-- Post-search refine bar -->
-    <div class="refine-bar" id="refine-bar">
-      <span class="refine-label">🔎 Refine results:</span>
-      <input type="text" class="refine-input" id="refine-input" placeholder="filter by name, club, league…">
-      <span class="refine-count" id="refine-count"></span>
+    <div class="results-wrap">
+      <div class="refine-side">
+        <h4>🔎 Refine</h4>
+        <input type="text" class="ri" id="ri" placeholder="name, club, league…">
+        <div class="refine-count" id="rc"></div>
+      </div>
+      <div class="results-main">
+        <div id="rh" class="results-hdr"></div>
+        <div id="rg" class="rg"></div>
+      </div>
     </div>
-    <div id="results-hdr" class="results-hdr"></div>
-    <div id="results-grid" class="results-grid"></div>
   </div>
 </main>
 
 <footer>
-  Powered by Qdrant · LangChain · Groq · FastAPI &nbsp;|&nbsp; 33 000+ players &nbsp;·&nbsp; 80+ leagues<br>
-  <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" rel="noopener" style="margin-top:.35rem;display:inline-block">View on GitHub ↗</a>
+  Powered by Qdrant · LangChain · Groq · FastAPI &nbsp;|&nbsp; 33 000+ players · 80+ leagues<br>
+  <a href="https://github.com/eastbloods/Player_Scouting_Recommendation_Bot" target="_blank" style="margin-top:.35rem;display:inline-block">View on GitHub ↗</a>
 </footer>
 
 <script>
+/* ── Config ──────────────────────────────────────────────────────────────── */
 const EXAMPLES = [
   "box-to-box midfielder high pressing",
   "young winger under 22 fast dribbler",
@@ -323,268 +333,378 @@ const EXAMPLES = [
   "goalkeeper sweeper-keeper style",
   "creative playmaker under 25",
   "right-back overlapping good crosses",
-  "defensive midfielder tackle machine",
 ];
 
-// ── DOM ───────────────────────────────────────────────────────────────────────
-const searchInput  = document.getElementById('search-input');
-const scoutBtn     = document.getElementById('scout-btn');
-const emptyState   = document.getElementById('empty-state');
-const errorState   = document.getElementById('error-state');
-const loadingState = document.getElementById('loading-state');
-const resultsArea  = document.getElementById('results-area');
-const resultsGrid  = document.getElementById('results-grid');
-const resultsHdr   = document.getElementById('results-hdr');
-const filterHeader = document.getElementById('filter-header');
-const filterBody   = document.getElementById('filter-body');
-const fhArrow      = document.getElementById('fh-arrow');
-const fhBadge      = document.getElementById('fh-badge');
-const filterSum    = document.getElementById('filter-summary');
-const clearBtn     = document.getElementById('clear-btn');
-const ageMin       = document.getElementById('age-min');
-const ageMax       = document.getElementById('age-max');
-const hMin         = document.getElementById('height-min');
-const hMax         = document.getElementById('height-max');
-const natInput     = document.getElementById('nat-input');
-const leagueInput  = document.getElementById('league-input');
-const refineInput  = document.getElementById('refine-input');
-const refineCount  = document.getElementById('refine-count');
+const SUB_POSITIONS = {
+  gk:  [{ pos:"goalkeeper", label:"GK" }],
+  def: [
+    { pos:"centre-back",   label:"Centre-Back" },
+    { pos:"right-back",    label:"Right-Back" },
+    { pos:"left-back",     label:"Left-Back" },
+    { pos:"defender",      label:"All DEF" },
+  ],
+  mid: [
+    { pos:"defensive midfielder",  label:"Def Mid" },
+    { pos:"central midfielder",    label:"Central Mid" },
+    { pos:"attacking midfielder",  label:"Att Mid" },
+    { pos:"midfielder",            label:"All MID" },
+  ],
+  att: [
+    { pos:"winger",  label:"Winger" },
+    { pos:"striker", label:"Striker" },
+    { pos:"attacker",label:"All ATT" },
+  ],
+};
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let selectedPos = null;
-let allPlayers  = [];   // full result list for client-side refine
+/* ── DOM ─────────────────────────────────────────────────────────────────── */
+const Q        = document.getElementById('q');
+const SB       = document.getElementById('sb');
+const fph      = document.getElementById('fph');
+const fpb      = document.getElementById('fpb');
+const fha      = document.getElementById('fha');
+const fhb      = document.getElementById('fhb');
+const faSum    = document.getElementById('fa-sum');
+const faClear  = document.getElementById('fa-clear');
+const faApply  = document.getElementById('fa-apply');
+const pl1      = document.getElementById('pl1');
+const pl2      = document.getElementById('pl2');
+const amin     = document.getElementById('amin');
+const amax     = document.getElementById('amax');
+const hmin     = document.getElementById('hmin');
+const hmax     = document.getElementById('hmax');
+const natWrap  = document.getElementById('nat-wrap');
+const natIn    = document.getElementById('nat-in');
+const leaWrap  = document.getElementById('lea-wrap');
+const leaIn    = document.getElementById('lea-in');
+const teamWrap = document.getElementById('team-wrap');
+const teamIn   = document.getElementById('team-in');
+const RI       = document.getElementById('ri');
+const RC       = document.getElementById('rc');
 
-// ── Chips ─────────────────────────────────────────────────────────────────────
+/* ── State ───────────────────────────────────────────────────────────────── */
+let broadCat    = null;   // 'gk'|'def'|'mid'|'att'
+let selectedPos = null;   // specific position string
+let natTags  = [], leaTags = [], teamTags = [];
+let allPlayers  = [];
+
+/* ── Chips ───────────────────────────────────────────────────────────────── */
 EXAMPLES.forEach(q => {
   const b = document.createElement('button');
   b.className = 'chip'; b.textContent = q;
-  b.onclick = () => { searchInput.value = q; doSearch(); };
+  b.onclick = () => { Q.value = q; doSearch(); };
   document.getElementById('chips').appendChild(b);
 });
 
-// ── Filter toggle ─────────────────────────────────────────────────────────────
-filterHeader.addEventListener('click', () => {
-  filterBody.classList.toggle('open');
-  fhArrow.classList.toggle('open');
+/* ── Filter panel toggle ─────────────────────────────────────────────────── */
+fph.addEventListener('click', () => {
+  fpb.classList.toggle('open');
+  fha.classList.toggle('open');
 });
 
-// ── Position buttons ──────────────────────────────────────────────────────────
-document.querySelectorAll('.pb').forEach(btn => {
+/* ── Level-1 position buttons ────────────────────────────────────────────── */
+pl1.querySelectorAll('.pb1').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (selectedPos === btn.dataset.pos) {
-      btn.classList.remove('on');
-      selectedPos = null;
+    const cat = btn.dataset.cat;
+    if (broadCat === cat) {
+      btn.classList.remove('on'); broadCat = null; selectedPos = null;
+      pl2.classList.add('hidden'); pl2.innerHTML = '';
     } else {
-      document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      selectedPos = btn.dataset.pos;
+      pl1.querySelectorAll('.pb1').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on'); broadCat = cat;
+      selectedPos = btn.dataset.pos; // default to broad
+      buildLevel2(cat);
     }
     updateSummary();
   });
 });
 
-// ── Filter events ─────────────────────────────────────────────────────────────
-[ageMin, ageMax, hMin, hMax, natInput, leagueInput].forEach(el =>
-  el.addEventListener('input', updateSummary)
-);
-
-function updateSummary() {
-  const parts = [];
-  if (selectedPos)      parts.push(selectedPos);
-  if (ageMin.value)     parts.push(`age ≥ ${ageMin.value}`);
-  if (ageMax.value)     parts.push(`age ≤ ${ageMax.value}`);
-  if (hMin.value)       parts.push(`≥ ${hMin.value} cm`);
-  if (hMax.value)       parts.push(`≤ ${hMax.value} cm`);
-  if (natInput.value.trim()) parts.push(natInput.value.trim());
-  if (leagueInput.value.trim()) parts.push(leagueInput.value.trim());
-
-  fhBadge.textContent = parts.length;
-  fhBadge.classList.toggle('visible', parts.length > 0);
-  filterSum.textContent = parts.length ? 'Active: ' + parts.join(' · ') : '';
+function buildLevel2(cat) {
+  pl2.innerHTML = ''; pl2.classList.remove('hidden');
+  SUB_POSITIONS[cat].forEach(item => {
+    const b = document.createElement('button');
+    b.className = `pb2 ${cat}`; b.dataset.pos = item.pos;
+    b.textContent = item.label;
+    if (item.pos === selectedPos) b.classList.add('on');
+    b.addEventListener('click', () => {
+      pl2.querySelectorAll('.pb2').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); selectedPos = item.pos; updateSummary();
+    });
+    pl2.appendChild(b);
+  });
 }
 
-// ── Clear ─────────────────────────────────────────────────────────────────────
-clearBtn.addEventListener('click', () => {
-  selectedPos = null;
-  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
-  ageMin.value = ''; ageMax.value = '';
-  hMin.value   = ''; hMax.value   = '';
-  natInput.value = ''; leagueInput.value = '';
+/* ── Tag inputs (nationality, league, team) ──────────────────────────────── */
+function makeTagInput(wrap, inp, tagsArr, key) {
+  inp.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
+      e.preventDefault();
+      const val = inp.value.trim().replace(/,$/, '');
+      if (val && !tagsArr.includes(val)) {
+        tagsArr.push(val);
+        renderTags(wrap, inp, tagsArr, key);
+        updateSummary();
+      }
+      inp.value = '';
+    }
+  });
+  inp.addEventListener('change', () => {
+    // Also trigger on datalist selection (change event fires on select)
+    const val = inp.value.trim();
+    if (val) {
+      inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    }
+  });
+}
+function renderTags(wrap, inp, arr, key) {
+  wrap.querySelectorAll('.tag').forEach(t => t.remove());
+  arr.forEach((v, i) => {
+    const t = document.createElement('span');
+    t.className = 'tag'; t.innerHTML = `${v}<span class="tag-x" data-i="${i}">×</span>`;
+    t.querySelector('.tag-x').onclick = () => {
+      arr.splice(i, 1); renderTags(wrap, inp, arr, key); updateSummary();
+    };
+    wrap.insertBefore(t, inp);
+  });
+}
+makeTagInput(natWrap,  natIn,  natTags,  'nat');
+makeTagInput(leaWrap,  leaIn,  leaTags,  'lea');
+makeTagInput(teamWrap, teamIn, teamTags, 'team');
+
+/* ── Number inputs ───────────────────────────────────────────────────────── */
+[amin, amax, hmin, hmax].forEach(el => el.addEventListener('input', updateSummary));
+
+/* ── Summary ─────────────────────────────────────────────────────────────── */
+function updateSummary() {
+  const parts = [];
+  if (selectedPos) parts.push(selectedPos);
+  if (amin.value)  parts.push(`age ≥ ${amin.value}`);
+  if (amax.value)  parts.push(`age ≤ ${amax.value}`);
+  if (hmin.value)  parts.push(`≥ ${hmin.value} cm`);
+  if (hmax.value)  parts.push(`≤ ${hmax.value} cm`);
+  natTags.forEach(n => parts.push(n));
+  leaTags.forEach(l => parts.push(l));
+  teamTags.forEach(t => parts.push(t));
+  fhb.textContent = parts.length;
+  fhb.classList.toggle('on', parts.length > 0);
+  faSum.textContent = parts.length ? 'Active: ' + parts.join(' · ') : '';
+}
+
+/* ── Clear ───────────────────────────────────────────────────────────────── */
+faClear.addEventListener('click', () => {
+  broadCat = null; selectedPos = null;
+  pl1.querySelectorAll('.pb1').forEach(b => b.classList.remove('on'));
+  pl2.classList.add('hidden'); pl2.innerHTML = '';
+  amin.value = ''; amax.value = ''; hmin.value = ''; hmax.value = '';
+  natTags.length = 0; leaTags.length = 0; teamTags.length = 0;
+  renderTags(natWrap, natIn, natTags, 'nat');
+  renderTags(leaWrap, leaIn, leaTags, 'lea');
+  renderTags(teamWrap, teamIn, teamTags, 'team');
+  natIn.value = ''; leaIn.value = ''; teamIn.value = '';
   updateSummary();
 });
 
-// ── Load meta (datalists) ─────────────────────────────────────────────────────
+faApply.addEventListener('click', doSearch);
+
+/* ── Load meta datalists ─────────────────────────────────────────────────── */
 async function loadMeta() {
   try {
-    const [lr, nr] = await Promise.all([
-      fetch('/meta/leagues'), fetch('/meta/nationalities')
-    ]);
+    const [lr, nr] = await Promise.all([fetch('/meta/leagues'), fetch('/meta/nationalities')]);
     const ld = await lr.json(); const nd = await nr.json();
-    const lDl = document.getElementById('league-list');
-    const nDl = document.getElementById('nat-list');
+    const lDl = document.getElementById('lea-dl');
+    const nDl = document.getElementById('nat-dl');
     ld.leagues.forEach(l => { const o = document.createElement('option'); o.value = l; lDl.appendChild(o); });
     nd.nationalities.forEach(n => { const o = document.createElement('option'); o.value = n; nDl.appendChild(o); });
   } catch(e) { console.warn('Meta load failed:', e); }
 }
 loadMeta();
 
-// ── Build payload ─────────────────────────────────────────────────────────────
+/* ── Build API payload ───────────────────────────────────────────────────── */
 function buildPayload() {
-  const p = { text: searchInput.value.trim() };
-  if (selectedPos)          p.position    = selectedPos;
-  if (ageMin.value)         p.min_age     = +ageMin.value;
-  if (ageMax.value)         p.max_age     = +ageMax.value;
-  if (hMin.value)           p.min_height  = +hMin.value;
-  if (hMax.value)           p.max_height  = +hMax.value;
-  const nat = natInput.value.trim();
-  const lea = leagueInput.value.trim();
-  if (nat) p.nationality = nat;
-  if (lea) p.league      = lea;
+  const p = { text: Q.value.trim() };
+  if (selectedPos)       p.position    = selectedPos;
+  if (amin.value)        p.min_age     = +amin.value;
+  if (amax.value)        p.max_age     = +amax.value;
+  if (hmin.value)        p.min_height  = +hmin.value;
+  if (hmax.value)        p.max_height  = +hmax.value;
+  // Use first nationality tag for hard filter (semantic search handles the rest)
+  if (natTags.length)    p.nationality = natTags[0];
+  if (leaTags.length)    p.league      = leaTags[0];
+  // Team is appended to text query for semantic search
+  if (teamTags.length)   p.text = (p.text + ' ' + teamTags.join(' ')).trim();
   return p;
 }
 
-// ── Avatar generator ──────────────────────────────────────────────────────────
-const AVATAR_COLORS = [
-  ['#1e3a5f','#3b82f6'],['#1a3a2a','#22c55e'],['#3a1e1e','#ef4444'],
-  ['#3a2e1e','#f59e0b'],['#2e1a3a','#a855f7'],['#1e3a38','#06b6d4'],
-  ['#3a1e30','#ec4899'],['#2a3a1e','#84cc16'],
+function hasAnyFilter(p) {
+  return !!(p.text || p.position || p.min_age || p.max_age ||
+            p.min_height || p.max_height || p.nationality || p.league);
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────────────── */
+const AVCOLS = [
+  ['#1a3352','#60a5fa'],['#1a3324','#4ade80'],['#3a1e1e','#f87171'],
+  ['#3a2d1a','#fbbf24'],['#2d1a3a','#c084fc'],['#1a3038','#22d3ee'],
+  ['#3a1a2e','#f472b6'],['#283a1a','#a3e635'],
 ];
-function getAvatar(name) {
-  let h = 0; for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  const [bg, fg] = AVATAR_COLORS[h % AVATAR_COLORS.length];
-  const parts = name.trim().split(/\s+/);
-  const init = parts.length >= 2
-    ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+function avatar(name) {
+  let h = 0; for (const c of name) h = (h*31 + c.charCodeAt(0)) & 0xffff;
+  const [bg, fg] = AVCOLS[h % AVCOLS.length];
+  const pts = name.trim().split(/\s+/);
+  const init = pts.length >= 2
+    ? (pts[0][0] + pts[pts.length-1][0]).toUpperCase()
     : name.slice(0,2).toUpperCase();
   return { bg, fg, init };
 }
 
-// ── Parse LLM output ──────────────────────────────────────────────────────────
+/* ── Parse LLM output ────────────────────────────────────────────────────── */
 function parsePlayers(raw) {
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
   const players = []; let cur = null;
   for (const line of lines) {
-    const isPlayer = line.includes('|')
+    const isP = line.includes('|')
       && !line.startsWith('→') && !line.startsWith('>') && !line.startsWith('No players');
-    if (isPlayer) { if (cur) players.push(cur); cur = parseLine(line); }
-    else if ((line.startsWith('→') || line.startsWith('>')) && cur)
+    if (isP) { if (cur) players.push(cur); cur = parseLine(line); }
+    else if ((line.startsWith('→')||line.startsWith('>')) && cur)
       cur.reason = line.replace(/^[→>]\s*/,'');
   }
   if (cur) players.push(cur);
   return players.filter(p => p && p.name && p.name.toLowerCase() !== 'none');
 }
+
 function parseLine(line) {
   const raw   = line.replace(/^[-*]\s*/,'').replace(/\*\*/g,'').trim();
   const parts = raw.split('|').map(p => p.trim());
   if (parts.length < 2) return null;
   const name = parts[0].trim();
   if (!name || name.toLowerCase() === 'none') return null;
+
   const ageClub   = parts[1] || '';
   const posStr    = parts[2] || '';
   const ratingStr = parts[3] || '';
   const keyStr    = parts[4] || '';
+
+  // Age
   const ageM = ageClub.match(/^(\d+)/);
   const age  = ageM ? ageM[1] : '';
-  const clM  = ageClub.match(/,\s*(.+?)\s*\((.+?)\)\s*$/);
+  // Club + League
+  const clM    = ageClub.match(/,\s*(.+?)\s*\((.+?)\)\s*$/);
   const club   = clM ? clM[1].trim() : '';
   const league = clM ? clM[2].trim() : '';
-  const rM   = ratingStr.match(/(\d\.\d+)/);
+  // Rating
+  const rM     = ratingStr.match(/(\d\.\d+)/);
   const rating = rM ? parseFloat(rM[1]) : null;
+  // Key stats
   const keyStats = keyStr.replace(/^Key:\s*/i,'').trim();
+  // Position category
   const pl = posStr.toLowerCase();
   let cat = 'default';
-  if (pl.includes('keeper') || pl.includes('goalkeeper')) cat = 'gk';
-  else if (pl.includes('back') || pl.includes('defend') || pl.includes('centre-b')) cat = 'def';
-  else if (pl.includes('wing') || pl.includes('forward') || pl.includes('striker') || pl.includes('attack')) cat = 'att';
+  if (pl.includes('keeper')||pl.includes('goalkeeper')) cat = 'gk';
+  else if (pl.includes('back')||pl.includes('defend')||pl.includes('centre-b')) cat = 'def';
+  else if (pl.includes('wing')||pl.includes('forward')||pl.includes('striker')||pl.includes('attack')) cat = 'att';
   else if (pl.includes('mid')) cat = 'mid';
-  return { name, age, club, league, position: posStr, cat, rating, keyStats, reason: '', _search: `${name} ${club} ${league} ${posStr}`.toLowerCase() };
+
+  // Split position into main + sub
+  const posMain = { gk:'Goalkeeper', def:'Defender', mid:'Midfielder', att:'Attacker', default:'Unknown' }[cat];
+  const posSub  = posStr.includes('(') ? posStr.match(/\((.+?)\)/)?.[1] || '' : '';
+
+  // Build search string for refine
+  const _s = `${name} ${club} ${league} ${posStr}`.toLowerCase();
+
+  return { name, age, club, league, posStr, posMain, posSub, cat, rating, keyStats, reason:'', _s };
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
-function renderPlayers(players, query) {
-  resultsGrid.innerHTML = '';
-  if (players.length === 0) {
-    resultsHdr.innerHTML = `⚠️ No players found — try adjusting your query or filters.`;
-    refineCount.textContent = '0 shown';
-    return;
+/* ── Render players ──────────────────────────────────────────────────────── */
+function renderPlayers(players, label) {
+  const rg = document.getElementById('rg');
+  const rh = document.getElementById('rh');
+  rg.innerHTML = '';
+  if (!players.length) {
+    rh.innerHTML = `⚠️ No players found — try adjusting your query or filters.`;
+    RC.textContent = '0 shown'; return;
   }
-  const label = query ? ` for "<em>${query}</em>"` : '';
-  resultsHdr.innerHTML = `✅ <strong>${allPlayers.length}</strong> player${allPlayers.length!==1?'s':''} found${label}`;
-  refineCount.textContent = `${players.length} shown`;
+  rh.innerHTML = `✅ <strong>${allPlayers.length}</strong> player${allPlayers.length!==1?'s':''} retrieved${label?` for "<em>${label}</em>"`:''} <span style="color:var(--t3)">· ${players.length} shown</span>`;
+  RC.textContent = `${players.length} of ${allPlayers.length}`;
 
   players.forEach((p, i) => {
-    const av = getAvatar(p.name);
+    const av = avatar(p.name);
     const card = document.createElement('div');
-    card.className = 'player-card';
-    card.style.animationDelay = `${i * 0.05}s`;
-    const rH = p.rating ? `<span class="rating-pill">★ ${p.rating.toFixed(2)}</span>` : '';
-    const sH = p.keyStats ? p.keyStats.split(',').slice(0,4).map(s=>`<span class="stat-pill">${s.trim()}</span>`).join('') : '';
-    const rNote = p.reason ? `<p class="scout-note">${p.reason}</p>` : '';
+    card.className = 'pc';
+    card.style.animationDelay = `${i * 0.045}s`;
+
+    const rH = p.rating ? `<span class="rp">★ ${p.rating.toFixed(2)}</span>` : '';
+    const sH = p.keyStats
+      ? p.keyStats.split(',').slice(0,4).map(s => `<span class="sp">${s.trim()}</span>`).join('') : '';
+    const statsBlock = (rH||sH) ? `<div class="divider"></div><div class="sr">${rH}${sH}</div>` : '';
+    const noteBlock  = p.reason ? `<p class="sn">${p.reason}</p>` : '';
+
+    const subTag = p.posSub
+      ? `<span class="ptag sub">${p.posSub}</span>` : '';
+
     card.innerHTML = `
-      <div class="card-top">
-        <div class="avatar" style="background:${av.bg};color:${av.fg}">${av.init}</div>
-        <div class="card-info">
-          <div class="player-name">${p.name}</div>
-          <span class="pos-badge badge-${p.cat}">${p.position || '?'}</span>
+      <div class="ct">
+        <div class="av" style="background:${av.bg};color:${av.fg}">${av.init}</div>
+        <div class="ci">
+          <div class="pn">${p.name}</div>
+          <div class="ptags">
+            <span class="ptag main ${p.cat}">${p.posMain}</span>
+            ${subTag}
+          </div>
         </div>
       </div>
-      <div class="card-meta">
-        <span class="main-line">${p.age ? p.age+' yrs' : ''}${p.age&&p.club?' · ':''}${p.club}</span>
-        ${p.league ? `<span>🏆 ${p.league}</span>` : ''}
+      <div class="cm">
+        <div class="cm-item"><span>🎂</span><span>${p.age ? p.age + ' yrs' : '—'}</span></div>
+        <div class="cm-item"><span>🏟️</span><span>${p.club || '—'}</span></div>
+        <div class="cm-item"><span>🏆</span><span>${p.league || '—'}</span></div>
       </div>
-      ${(rH||sH)?`<div class="divider"></div><div class="stats-row">${rH}${sH}</div>`:''}
-      ${rNote}
+      ${statsBlock}
+      ${noteBlock}
     `;
-    resultsGrid.appendChild(card);
+    rg.appendChild(card);
   });
 }
 
-// ── Refine (client-side) ──────────────────────────────────────────────────────
-refineInput.addEventListener('input', () => {
-  const q = refineInput.value.toLowerCase().trim();
-  const filtered = q ? allPlayers.filter(p => p._search.includes(q)) : allPlayers;
+/* ── Refine (client-side) ────────────────────────────────────────────────── */
+RI.addEventListener('input', () => {
+  const q = RI.value.toLowerCase().trim();
+  const filtered = q ? allPlayers.filter(p => p._s.includes(q)) : allPlayers;
   renderPlayers(filtered, null);
-  refineCount.textContent = `${filtered.length} shown`;
 });
 
-// ── Show state ────────────────────────────────────────────────────────────────
-function showOnly(name) {
-  emptyState.classList.add('hidden'); errorState.classList.add('hidden');
-  loadingState.classList.add('hidden'); resultsArea.classList.add('hidden');
-  if (name==='empty')   emptyState.classList.remove('hidden');
-  if (name==='error')   errorState.classList.remove('hidden');
-  if (name==='loading') loadingState.classList.remove('hidden');
-  if (name==='results') resultsArea.classList.remove('hidden');
+/* ── State helpers ───────────────────────────────────────────────────────── */
+function showOnly(s) {
+  ['empty','err','loading','results-area'].forEach(id =>
+    document.getElementById(id).classList.add('hidden')
+  );
+  const el = document.getElementById(s === 'results' ? 'results-area' : s);
+  if (el) el.classList.remove('hidden');
 }
 function setLoading(on) {
-  scoutBtn.disabled = on;
-  scoutBtn.innerHTML = on ? '⏳ Scouting…' : '⚡ Scout';
+  SB.disabled = on;
+  SB.innerHTML = on ? '⏳ Scouting…' : '⚡ Scout';
 }
 
-// ── Search ────────────────────────────────────────────────────────────────────
+/* ── Search ──────────────────────────────────────────────────────────────── */
 async function doSearch() {
   const payload = buildPayload();
-  if (!payload.text && !payload.position && !payload.min_age && !payload.min_height
-      && !payload.nationality && !payload.league) return;
+  if (!hasAnyFilter(payload)) return;
 
-  setLoading(true); showOnly('loading'); refineInput.value = '';
+  setLoading(true); showOnly('loading'); RI.value = '';
   try {
-    const res  = await fetch('/search/', {
+    const res = await fetch('/search/', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    allPlayers  = parsePlayers(data.text);
+    allPlayers = parsePlayers(data.text);
     renderPlayers(allPlayers, payload.text);
     showOnly('results');
   } catch(e) {
-    console.error(e); showOnly('error');
+    console.error(e); showOnly('err');
   } finally { setLoading(false); }
 }
 
-scoutBtn.addEventListener('click', doSearch);
-searchInput.addEventListener('keyup', e => { if (e.key==='Enter') doSearch(); });
+SB.addEventListener('click', doSearch);
+Q.addEventListener('keyup', e => { if (e.key==='Enter') doSearch(); });
 </script>
 </body>
 </html>

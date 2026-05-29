@@ -24,8 +24,7 @@ log = logging.getLogger(__name__)
 API_TOKEN = os.getenv("SPORTMONK-TOKEN") or os.getenv("SPORTMONKS_TOKEN")
 DB_URL    = os.getenv("DATABASE_URL")
 QDRANT    = os.getenv("QDRANT_URL")
-HEADERS   = {"Authorization": API_TOKEN}
-BASE_URL  = "https://api.sportmonks.com/v3/football"
+CORE_URL  = "https://api.sportmonks.com/v3/core"
 
 
 # ── 1. Fetch all countries from SportMonks ────────────────────────────────────
@@ -35,9 +34,8 @@ def fetch_all_countries() -> dict[int, str]:
     page = 1
     while True:
         resp = requests.get(
-            f"{BASE_URL}/countries",
-            headers=HEADERS,
-            params={"page": page, "per_page": 150}
+            f"{CORE_URL}/countries",
+            params={"api_token": API_TOKEN, "page": page, "per_page": 150}
         )
         resp.raise_for_status()
         data = resp.json()
@@ -53,6 +51,7 @@ def fetch_all_countries() -> dict[int, str]:
         time.sleep(0.3)
     log.info(f"Fetched {len(results)} countries from SportMonks")
     return results
+
 
 
 # ── 2. Update Postgres ────────────────────────────────────────────────────────
