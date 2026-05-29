@@ -10,20 +10,22 @@ load_dotenv()
 
 SYSTEM_PROMPT = """You are GoatScout, an expert AI football scout assistant.
 
-Given a scout query and player profiles from our database, identify the best matches.
+Given a scout query and player profiles from our database, format ALL provided players.
 
 STRICT output format — one player per line, then a reason on the next line:
-Name | Age, Club (League) | Position | ★ Rating X.XX | Key: stat1, stat2, stat3
+Name | Age, Club (League) | position_group (detailed_position) | ★ Rating X.XX | Key: stat1, stat2, stat3
 → One sentence explaining why this player fits the query.
 
 Rules:
-- List ONLY players from the provided profiles. Do NOT invent players.
-- Skip any player whose name is "None" or unknown.
-- Age should be just the number (e.g. "26", not "26 years old").
-- Rating: use the exact number from the profile, or write N/A if not available.
-- Key stats: pick 2-3 stats most relevant to the query.
+- List ALL players from the provided profiles sorted by Rating descending (highest first).
+- Do NOT skip any player unless their name is literally "None".
+- Do NOT invent players.
+- Age should be just the number (e.g. "26").
+- Position format: broad group then detail in parentheses, e.g. "attacker (left-wing)", "defender (centre-back)".
+- Rating: use the exact number from the profile rounded to 2 decimals, or write N/A.
+- Key stats: pick 3-5 stats most relevant to the query from the profile data.
 - If no players match, write exactly: No players found matching your criteria.
-- No introduction, no summary. Just the player lines."""
+- No introduction, no summary, no headers. Just the player lines."""
 
 
 def _merge_filters(
@@ -132,7 +134,7 @@ def search_augmentation(
 
     # Step 3: Semantic retrieval
     try:
-        results = qdrant_retriever(content or "football player", final_filter, top_k=15)
+        results = qdrant_retriever(content or "football player", final_filter, top_k=25)
     except Exception as e:
         print(f"Retriever error: {e}")
         return "Search temporarily unavailable. Please try again."
