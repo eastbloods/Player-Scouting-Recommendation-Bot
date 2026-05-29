@@ -3,6 +3,7 @@ from vector_store.retriever import qdrant_retriever
 from agents.filter_agent import build_filters, PlayerFilter
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
 import os
+import re
 from typing import Optional
 from dotenv import load_dotenv
 
