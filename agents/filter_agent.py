@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from llama_index.core.vector_stores import MetadataFilter, MetadataFilters
+from qdrant_client.models import Filter, FieldCondition, Range, MatchValue
 import re
 
 
@@ -48,43 +48,52 @@ class PlayerFilter(BaseModel):
     )
     league: Optional[str] = Field(
         default=None,
-        description="League name, e.g. 'Premiership', 'Championship'."
+        description="League name, e.g. 'Premier League', 'La Liga', 'Bundesliga'."
     )
 
 
-def build_filters(player_filter: PlayerFilter) -> MetadataFilters:
-    filters = []
+def build_filters(player_filter: PlayerFilter) -> Filter | None:
+    """Build a native Qdrant Filter from extracted player criteria."""
+    conditions = []
 
     if player_filter.position:
-        filters.append(MetadataFilter(key="position", value=player_filter.position.lower(), operator="=="))
+        conditions.append(
+            FieldCondition(key="position", match=MatchValue(value=player_filter.position.lower()))
+        )
 
     if player_filter.min_height:
         num = extract_number(player_filter.min_height)
         if num:
-            filters.append(MetadataFilter(key="height", value=num, operator=">="))
+            conditions.append(FieldCondition(key="height", range=Range(gte=num)))
 
     if player_filter.max_height:
         num = extract_number(player_filter.max_height)
         if num:
-            filters.append(MetadataFilter(key="height", value=num, operator="<="))
+            conditions.append(FieldCondition(key="height", range=Range(lte=num)))
 
     if player_filter.min_age:
         num = extract_number(player_filter.min_age)
         if num:
-            filters.append(MetadataFilter(key="age", value=num, operator=">="))
+            conditions.append(FieldCondition(key="age", range=Range(gte=num)))
 
     if player_filter.max_age:
         num = extract_number(player_filter.max_age)
         if num:
-            filters.append(MetadataFilter(key="age", value=num, operator="<="))
+            conditions.append(FieldCondition(key="age", range=Range(lte=num)))
 
     if player_filter.nationality:
-        filters.append(MetadataFilter(key="nationality", value=player_filter.nationality, operator="=="))
+        conditions.append(
+            FieldCondition(key="nationality", match=MatchValue(value=player_filter.nationality))
+        )
 
     if player_filter.team:
-        filters.append(MetadataFilter(key="team", value=player_filter.team, operator="=="))
+        conditions.append(
+            FieldCondition(key="team", match=MatchValue(value=player_filter.team))
+        )
 
     if player_filter.league:
-        filters.append(MetadataFilter(key="league", value=player_filter.league, operator="=="))
+        conditions.append(
+            FieldCondition(key="league", match=MatchValue(value=player_filter.league))
+        )
 
-    return MetadataFilters(filters=filters)
+    return Filter(must=conditions) if conditions else None
