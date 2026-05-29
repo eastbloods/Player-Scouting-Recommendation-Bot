@@ -8,6 +8,33 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def _extract_numeric_from_query(query: str) -> dict:
+    """Reliably extract age/height constraints via regex — faster and more accurate than LLM."""
+    result = {}
+    q = query.lower()
+    # Max age: "under 25", "u25", "younger than 25", "aged under 25", "no older than 25"
+    m = re.search(r'\bunder\s+(\d{2})\b(?!\s*cm)|\byounger\s+than\s+(\d{2})|\bno\s+older\s+than\s+(\d{2})', q)
+    if m:
+        val = next(v for v in m.groups() if v)
+        result['max_age'] = int(val)
+    # Min age: "over 28" (NOT height), "older than 28", "at least 28"
+    m = re.search(r'\bover\s+(\d{2})\b(?!\s*cm)|\bolder\s+than\s+(\d{2})|\bat\s+least\s+(\d{2})\s*(?:years|yr)', q)
+    if m:
+        val = next(v for v in m.groups() if v)
+        result['min_age'] = int(val)
+    # Min height: "over 190cm", "190cm+", "taller than 185", "at least 185cm"
+    m = re.search(r'\bover\s+(\d{3})\s*cm|\b(\d{3})\s*cm\s*\+|taller\s+than\s+(\d{3})|at\s+least\s+(\d{3})\s*cm', q)
+    if m:
+        val = next(v for v in m.groups() if v)
+        result['min_height'] = int(val)
+    # Max height: "under 175cm", "shorter than 175"
+    m = re.search(r'\bunder\s+(\d{3})\s*cm|shorter\s+than\s+(\d{3})', q)
+    if m:
+        val = next(v for v in m.groups() if v)
+        result['max_height'] = int(val)
+    return result
+
 SYSTEM_PROMPT = """You are GoatScout, an expert AI football scout assistant.
 
 Given a scout query and player profiles from our database, format ALL provided players.
@@ -112,29 +139,39 @@ def search_augmentation(
         api_key=os.getenv("GROQ_API_KEY"),
     )
 
-    # Step 1: Extract LLM filters from text query
+    # Step 1a: Regex-based extraction (reliable, runs always)
+    regex_nums = _extract_numeric_from_query(content or "")
+    print(f"REGEX FILTERS: {regex_nums}")
+
+    # Step 1b: LLM filter extraction for position (less critical if it fails)
     llm_filter = None
     try:
         filter_llm = llm.with_structured_output(PlayerFilter)
         player_filter = filter_llm.invoke(
-            f"Extract ONLY position, min_age, max_age, min_height, max_height from: {content}"
+            f"Extract ONLY position from this query (ignore age/height, those are handled): {content}"
         )
         llm_filter = build_filters(player_filter)
     except Exception as e:
         print(f"Filter extraction failed: {e} — continuing without LLM filters")
 
-    # Step 2: Merge LLM filters with explicit UI filters
+    # Step 2: Merge — regex numbers override LLM, UI overrides everything
+    # Apply regex-extracted numbers as fallback when UI doesn't provide them
+    eff_min_age    = ui_min_age    or regex_nums.get('min_age')
+    eff_max_age    = ui_max_age    or regex_nums.get('max_age')
+    eff_min_height = ui_min_height or regex_nums.get('min_height')
+    eff_max_height = ui_max_height or regex_nums.get('max_height')
+
     final_filter = _merge_filters(
         llm_filter,
-        ui_position, ui_min_age, ui_max_age,
-        ui_min_height, ui_max_height,
+        ui_position, eff_min_age, eff_max_age,
+        eff_min_height, eff_max_height,
         ui_nationality, ui_league,
     )
     print(f"FINAL FILTER: {final_filter}")
 
     # Step 3: Semantic retrieval
     try:
-        results = qdrant_retriever(content or "football player", final_filter, top_k=20)
+        results = qdrant_retriever(content or "football player", final_filter, top_k=12)
     except Exception as e:
         print(f"Retriever error: {e}")
         return "Search temporarily unavailable. Please try again."

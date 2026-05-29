@@ -404,7 +404,7 @@ loadMeta();
 /* ══════════════════════════════════════════════
    CUSTOM AUTOCOMPLETE DROPDOWN
    ══════════════════════════════════════════════ */
-function createAutocomplete(inputId, dropdownId, wrapId, tagsArr, getOptions) {
+function createAutocomplete(inputId, dropdownId, wrapId, tagsArr, getOptions, allowCustom) {
   const inp  = document.getElementById(inputId);
   const dd   = document.getElementById(dropdownId);
   const wrap = document.getElementById(wrapId);
@@ -413,24 +413,34 @@ function createAutocomplete(inputId, dropdownId, wrapId, tagsArr, getOptions) {
   function showDD(query) {
     const opts = getOptions();
     const q = query.toLowerCase().trim();
-    const filtered = q ? opts.filter(o => o.toLowerCase().includes(q)) : [];
     dd.innerHTML = '';
     activeIdx = -1;
 
-    if (!q || filtered.length === 0) {
-      if (q && filtered.length === 0) {
-        dd.innerHTML = '<div class="ac-empty">No matches — press Enter to add custom</div>';
-        dd.classList.add('open');
-      } else {
-        dd.classList.remove('open');
-      }
+    if (!q) { dd.classList.remove('open'); return; }
+
+    // Meta not loaded yet
+    if (opts.length === 0 && !allowCustom) {
+      dd.innerHTML = '<div class="ac-empty">⏳ Loading suggestions…</div>';
+      dd.classList.add('open');
       return;
     }
 
-    filtered.slice(0, 12).forEach((opt, i) => {
+    const filtered = opts.filter(o => o.toLowerCase().includes(q));
+
+    if (filtered.length === 0) {
+      if (allowCustom) {
+        dd.innerHTML = `<div class="ac-opt" data-custom="1">+ Add "<strong>${query}</strong>"</div>`;
+        dd.querySelector('[data-custom]')?.addEventListener('mousedown', e => { e.preventDefault(); addTag(query); dd.classList.remove('open'); });
+      } else {
+        dd.innerHTML = '<div class="ac-empty">No results — check spelling</div>';
+      }
+      dd.classList.add('open');
+      return;
+    }
+
+    filtered.slice(0, 14).forEach((opt, i) => {
       const div = document.createElement('div');
       div.className = 'ac-opt';
-      // Highlight matched part
       const idx = opt.toLowerCase().indexOf(q);
       if (idx >= 0) {
         div.innerHTML = opt.slice(0, idx) + '<mark>' + opt.slice(idx, idx+q.length) + '</mark>' + opt.slice(idx+q.length);
@@ -474,7 +484,8 @@ function createAutocomplete(inputId, dropdownId, wrapId, tagsArr, getOptions) {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (activeIdx >= 0 && items[activeIdx]) {
-        addTag(items[activeIdx].textContent);
+        const custom = items[activeIdx].dataset.custom;
+        addTag(custom ? inp.value : items[activeIdx].textContent);
       } else if (inp.value.trim()) {
         addTag(inp.value);
       }
@@ -495,15 +506,15 @@ function renderTags(wrap, inp, arr) {
   });
 }
 
-/* ── Wire autocompletes ────────────────────── */
-createAutocomplete('f-nat-i',  'f-nat-dd',  'f-nat-w',  fNatTags,  () => META_NATIONALITIES);
-createAutocomplete('f-tc-i',   'f-tc-dd',   'f-tc-w',   fTcTags,   () => META_NATIONALITIES);
-createAutocomplete('f-lea-i',  'f-lea-dd',  'f-lea-w',  fLeaTags,  () => META_LEAGUES);
-createAutocomplete('f-team-i', 'f-team-dd', 'f-team-w', fTeamTags, () => []);
-
-/* ── Filter state ────────────────────────────── */
+/* ── Filter state (MUST be before createAutocomplete calls) ─── */
 var fBroadCat = null, fBroadPos = null, fSubPos = null;
 var fNatTags = [], fTcTags = [], fLeaTags = [], fTeamTags = [];
+
+/* ── Wire autocompletes ────────────────────── */
+createAutocomplete('f-nat-i',  'f-nat-dd',  'f-nat-w',  fNatTags,  () => META_NATIONALITIES, false);
+createAutocomplete('f-tc-i',   'f-tc-dd',   'f-tc-w',   fTcTags,   () => META_NATIONALITIES, false);
+createAutocomplete('f-lea-i',  'f-lea-dd',  'f-lea-w',  fLeaTags,  () => META_LEAGUES, false);
+createAutocomplete('f-team-i', 'f-team-dd', 'f-team-w', fTeamTags, () => [], true);
 
 /* ── Position ────────────────────────────────── */
 const fPl1 = document.getElementById('f-pl1');
