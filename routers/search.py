@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from agents.search_agent import search_augmentation
-from agents.filter_agent import build_filters, PlayerFilter
 from schemas import SearchPlayerResponse, SearchPlayerRequest
 
 router = APIRouter(prefix="/search", tags=["search"])
@@ -10,7 +9,7 @@ router = APIRouter(prefix="/search", tags=["search"])
 def search_query(request: SearchPlayerRequest):
     """
     Search players by natural language query + optional UI filters.
-    UI filters (position, age, height, nationality, league) are applied
+    UI filters (position, age, height, nationality, league, team_country) are applied
     directly as hard Qdrant filters, bypassing LLM extraction when set.
     """
     response = search_augmentation(
@@ -22,5 +21,7 @@ def search_query(request: SearchPlayerRequest):
         ui_max_height=request.max_height,
         ui_nationality=request.nationality,
         ui_league=request.league,
+        ui_team_country=request.team_country,
+        ui_team=request.team,
     )
     return {"text": response}

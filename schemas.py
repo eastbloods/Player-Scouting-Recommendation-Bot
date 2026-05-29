@@ -10,8 +10,10 @@ class SearchPlayerRequest(BaseModel):
     max_age: Optional[int] = None
     min_height: Optional[int] = None
     max_height: Optional[int] = None
-    nationality: Optional[str] = None       # country name, e.g. "France"
-    league: Optional[str] = None            # exact league name
+    nationality: Optional[str] = None       # player nationality e.g. "France"
+    league: Optional[str] = None            # exact league name e.g. "Super Lig"
+    team_country: Optional[str] = None      # country where team plays e.g. "Portugal"
+    team: Optional[str] = None              # specific team name (semantic filter)
 
 
 class SearchPlayerResponse(BaseModel):

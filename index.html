@@ -569,11 +569,55 @@ function renderTags(wrap, inp, arr) {
 var fBroadCat = null, fBroadPos = null, fSubPos = null;
 var fNatTags = [], fTcTags = [], fLeaTags = [], fTeamTags = [];
 
+/* ── Country → Leagues (mirrors backend mapping) ─────────────── */
+const COUNTRY_LEAGUES_JS = {
+  "England":      ["Premier League","Championship","League One","League Two","Enterprise National League"],
+  "Spain":        ["La Liga","Segunda División"],
+  "Germany":      ["Bundesliga","2. Bundesliga"],
+  "Italy":        ["Serie A","Serie B"],
+  "France":       ["Ligue 1","Ligue 2","National"],
+  "Portugal":     ["Primeira Liga","Liga Portugal 2","Liga Portugal"],
+  "Netherlands":  ["Eredivisie","Eerste Divisie"],
+  "Turkey":       ["Super Lig","1. Lig"],
+  "Poland":       ["Ekstraklasa"],
+  "Belgium":      ["Belgian Pro League"],
+  "Austria":      ["Austrian Bundesliga"],
+  "Scotland":     ["Scottish Premiership","Scottish Championship"],
+  "Switzerland":  ["Super League","Challenge League"],
+  "Sweden":       ["Allsvenskan","Superettan"],
+  "Norway":       ["Eliteserien"],
+  "Denmark":      ["Danish Superliga"],
+  "Czech Republic": ["Czech First League"],
+  "Hungary":      ["NB I"],
+  "Serbia":       ["Super Liga"],
+  "Brazil":       ["Brasileirão"],
+  "Argentina":    ["Argentine Primera División"],
+  "Mexico":       ["Liga MX"],
+  "United States": ["MLS"],
+  "Saudi Arabia": ["Saudi Pro League"],
+  "Iran":         ["Persian Gulf Pro League"],
+  "Morocco":      ["Botola Pro"],
+  "Australia":    ["A-League Men"],
+  "Japan":        ["J1 League"],
+  "South Korea":  ["K League 1"],
+  "India":        ["Indian Super League"],
+};
+
+function _getLeagueOptions() {
+  // If a team country is selected, restrict to its leagues
+  if (fTcTags.length > 0) {
+    const country = fTcTags[0];
+    return COUNTRY_LEAGUES_JS[country] || META_LEAGUES;
+  }
+  return META_LEAGUES;
+}
+
 /* ── Wire autocompletes ────────────────────── */
 createAutocomplete('f-nat-i',  'f-nat-dd',  'f-nat-w',  fNatTags,  () => META_NATIONALITIES, false);
 createAutocomplete('f-tc-i',   'f-tc-dd',   'f-tc-w',   fTcTags,   () => META_NATIONALITIES, false);
-createAutocomplete('f-lea-i',  'f-lea-dd',  'f-lea-w',  fLeaTags,  () => META_LEAGUES, false);
-createAutocomplete('f-team-i', 'f-team-dd', 'f-team-w', fTeamTags, () => [], true);
+createAutocomplete('f-lea-i',  'f-lea-dd',  'f-lea-w',  fLeaTags,  _getLeagueOptions,         false);
+createAutocomplete('f-team-i', 'f-team-dd', 'f-team-w', fTeamTags, () => [],                  true);
+
 
 /* ── Position ────────────────────────────────── */
 const fPl1 = document.getElementById('f-pl1');
@@ -845,21 +889,36 @@ document.getElementById('p-ri').addEventListener('input', function(){
 /* ═══ FILTER SEARCH ═══════════════════════ */
 let fAll = [];
 async function filterSearch() {
-  const pos=fSubPos||fBroadPos;
-  const amin=document.getElementById('f-amin').value,amax=document.getElementById('f-amax').value;
-  const hmin=document.getElementById('f-hmin').value,hmax=document.getElementById('f-hmax').value;
-  const extraQ=document.getElementById('f-q').value.trim();
-  let textParts=[];
-  if(extraQ) textParts.push(extraQ);
-  if(fTcTags.length) textParts.push('in '+fTcTags.join(' or '));
-  if(fTeamTags.length) textParts.push('team '+fTeamTags.join(' or '));
-  const payload={text:textParts.join(', ')||''};
-  if(pos) payload.position=pos;
-  if(amin) payload.min_age=+amin; if(amax) payload.max_age=+amax;
-  if(hmin) payload.min_height=+hmin; if(hmax) payload.max_height=+hmax;
-  if(fNatTags.length) payload.nationality=fNatTags[0];
-  if(fLeaTags.length) payload.league=fLeaTags[0];
-  if(!Object.values(payload).some(v=>v)) return;
+  const pos = fSubPos || fBroadPos;
+  const amin = document.getElementById('f-amin').value;
+  const amax = document.getElementById('f-amax').value;
+  const hmin = document.getElementById('f-hmin').value;
+  const hmax = document.getElementById('f-hmax').value;
+  const extraQ = document.getElementById('f-q').value.trim();
+
+  const payload = { text: extraQ || '' };
+  if (pos)  payload.position   = pos;
+  if (amin) payload.min_age    = +amin;
+  if (amax) payload.max_age    = +amax;
+  if (hmin) payload.min_height = +hmin;
+  if (hmax) payload.max_height = +hmax;
+
+  // Player nationality filter
+  if (fNatTags.length) payload.nationality = fNatTags[0];
+
+  // League filter — specific league takes priority over country
+  if (fLeaTags.length) {
+    payload.league = fLeaTags[0];
+  } else if (fTcTags.length) {
+    // Country → backend expands to OR of its domestic leagues
+    payload.team_country = fTcTags[0];
+  }
+
+  // Team filter (semantic)
+  if (fTeamTags.length) payload.team = fTeamTags[0];
+
+  const hasAnyFilter = Object.entries(payload).some(([k, v]) => k !== 'text' ? Boolean(v) : Boolean(v));
+  if (!hasAnyFilter) return;
   showOnly('f','loading'); document.getElementById('f-ri').value='';
   try {
     const res=await fetch('/search/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});

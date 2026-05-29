@@ -65,32 +65,99 @@ def _norm_league(v: str) -> str:
 def _norm_nationality(v: str) -> str:
     return NAT_NORM.get(v.lower().strip(), v.strip())
 
+
+# ── Country → domestic league names (stored in Qdrant) ────────────────────────
+COUNTRY_LEAGUES: dict[str, list[str]] = {
+    "England":     ["Premier League", "Championship", "League One", "League Two", "Enterprise National League"],
+    "Spain":       ["La Liga", "Segunda División"],
+    "Germany":     ["Bundesliga", "2. Bundesliga"],
+    "Italy":       ["Serie A", "Serie B"],
+    "France":      ["Ligue 1", "Ligue 2", "National", "Championnat National"],
+    "Portugal":    ["Primeira Liga", "Liga Portugal 2", "Liga Portugal"],
+    "Netherlands": ["Eredivisie", "Eerste Divisie"],
+    "Turkey":      ["Super Lig", "1. Lig"],
+    "Poland":      ["Ekstraklasa", "I liga"],
+    "Belgium":     ["Belgian Pro League", "Challenger Pro League"],
+    "Austria":     ["Austrian Bundesliga", "2. Liga"],
+    "Scotland":    ["Scottish Premiership", "Scottish Championship"],
+    "Switzerland": ["Super League", "Challenge League"],
+    "Sweden":      ["Allsvenskan", "Superettan"],
+    "Norway":      ["Eliteserien", "OBOS-ligaen"],
+    "Denmark":     ["Danish Superliga", "1. Division"],
+    "Czech Republic": ["Czech First League", "FNL"],
+    "Hungary":     ["NB I", "NB II"],
+    "Greece":      ["Super League", "Super League 2"],
+    "Russia":      ["Russian Premier League", "FNL"],
+    "Serbia":      ["Super Liga"],
+    "Croatia":     ["HNL"],
+    "Romania":     ["Liga I"],
+    "Slovakia":    ["Niké Liga"],
+    "Brazil":      ["Brasileirão", "Série B"],
+    "Argentina":   ["Argentine Primera División", "Primera Nacional"],
+    "Mexico":      ["Liga MX"],
+    "Colombia":    ["Categoría Primera A"],
+    "United States": ["MLS"],
+    "Saudi Arabia": ["Saudi Pro League"],
+    "Iran":        ["Persian Gulf Pro League"],
+    "Egypt":       ["Egyptian Premier League"],
+    "Morocco":     ["Botola Pro"],
+    "Australia":   ["A-League Men"],
+    "Japan":       ["J1 League"],
+    "South Korea": ["K League 1"],
+    "India":       ["Indian Super League"],
+}
+
+
+def _leagues_for_country(country: str) -> list[str]:
+    """Return known league names for a given country name."""
+    normalized = country.strip()
+    # Try direct match
+    leagues = COUNTRY_LEAGUES.get(normalized)
+    if leagues:
+        return leagues
+    # Try case-insensitive match
+    for k, v in COUNTRY_LEAGUES.items():
+        if k.lower() == normalized.lower():
+            return v
+    return []
+
+
 def _extract_numeric_from_query(query: str) -> dict:
     """Reliably extract age/height constraints via regex — faster and more accurate than LLM."""
-
     result = {}
     q = query.lower()
-    # Max age: "under 25", "u25", "younger than 25", "aged under 25", "no older than 25"
+
+    # ─ Keyword-based age hints (no explicit number) ─
+    if re.search(r'\bteenager\b|\bteenage\b|\byouth\b', q) and 'max_age' not in result:
+        result['max_age'] = 19
+    elif re.search(r'\byoung\b|\byoungster\b|\bprodigy\b', q) and 'max_age' not in result:
+        result['max_age'] = 23
+    elif re.search(r'\bveteran\b', q) and 'min_age' not in result:
+        result['min_age'] = 32
+    elif re.search(r'\bexperienced\b', q) and 'min_age' not in result:
+        result['min_age'] = 28
+
+    # ─ Explicit numeric age ─
     m = re.search(r'\bunder\s+(\d{2})\b(?!\s*cm)|\byounger\s+than\s+(\d{2})|\bno\s+older\s+than\s+(\d{2})', q)
     if m:
         val = next(v for v in m.groups() if v)
-        result['max_age'] = int(val)
-    # Min age: "over 28" (NOT height), "older than 28", "at least 28"
+        result['max_age'] = int(val)  # overrides keyword hint
     m = re.search(r'\bover\s+(\d{2})\b(?!\s*cm)|\bolder\s+than\s+(\d{2})|\bat\s+least\s+(\d{2})\s*(?:years|yr)', q)
     if m:
         val = next(v for v in m.groups() if v)
         result['min_age'] = int(val)
-    # Min height: "over 190cm", "190cm+", "taller than 185", "at least 185cm"
+
+    # ─ Height ─
     m = re.search(r'\bover\s+(\d{3})\s*cm|\b(\d{3})\s*cm\s*\+|taller\s+than\s+(\d{3})|at\s+least\s+(\d{3})\s*cm', q)
     if m:
         val = next(v for v in m.groups() if v)
         result['min_height'] = int(val)
-    # Max height: "under 175cm", "shorter than 175"
     m = re.search(r'\bunder\s+(\d{3})\s*cm|shorter\s+than\s+(\d{3})', q)
     if m:
         val = next(v for v in m.groups() if v)
         result['max_height'] = int(val)
     return result
+
 
 SYSTEM_PROMPT = """You are GoatScout, an expert AI football scout assistant.
 
@@ -121,6 +188,7 @@ def _merge_filters(
     ui_max_height: int | None,
     ui_nationality: str | None,
     ui_league: str | None,
+    ui_team_country: str | None = None,
 ) -> Filter | None:
     """
     Merge LLM-extracted filters with explicit UI filters.
@@ -167,9 +235,28 @@ def _merge_filters(
     if ui_nationality:
         must.append(FieldCondition(key="nationality", match=MatchValue(value=_norm_nationality(ui_nationality))))
 
-    # League — normalise before exact match (SportMonks names vs branded names)
+    # League — exact league name OR expanded from team_country
     if ui_league:
         must.append(FieldCondition(key="league", match=MatchValue(value=_norm_league(ui_league))))
+    elif ui_team_country:
+        # Expand country → list of domestic league names → OR filter
+        country_leagues = _leagues_for_country(ui_team_country)
+        if country_leagues:
+            league_conditions = [
+                FieldCondition(key="league", match=MatchValue(value=lg))
+                for lg in country_leagues
+            ]
+            # We need these as a should (OR) block within must
+            from qdrant_client.models import NestedCondition
+            # Qdrant supports nested should via Filter nested
+            # Use MinShould pattern for league OR filter
+            country_should = league_conditions
+        else:
+            country_should = []
+
+        if country_should:
+            # Inject country OR leagues into must via nested filter
+            must.append(Filter(should=country_should))
 
     if not must and not should:
         return None
@@ -190,6 +277,8 @@ def search_augmentation(
     ui_max_height: Optional[int] = None,
     ui_nationality: Optional[str] = None,
     ui_league: Optional[str] = None,
+    ui_team_country: Optional[str] = None,
+    ui_team: Optional[str] = None,
 ) -> str:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
@@ -223,12 +312,18 @@ def search_augmentation(
         ui_position, eff_min_age, eff_max_age,
         eff_min_height, eff_max_height,
         ui_nationality, ui_league,
+        ui_team_country=ui_team_country,
     )
     print(f"FINAL FILTER: {final_filter}")
 
+    # If team specified, add it to semantic query
+    effective_query = content or ""
+    if ui_team and ui_team not in effective_query:
+        effective_query = f"{effective_query} team:{ui_team}".strip()
+
     # Step 3: Semantic retrieval
     try:
-        results = qdrant_retriever(content or "football player", final_filter, top_k=12)
+        results = qdrant_retriever(effective_query or "football player", final_filter, top_k=12)
     except Exception as e:
         print(f"Retriever error: {e}")
         return "Search temporarily unavailable. Please try again."
