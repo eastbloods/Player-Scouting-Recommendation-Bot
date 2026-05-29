@@ -7,39 +7,73 @@ import re
 # Broad positions stored in Qdrant payload["position"]
 BROAD_POSITIONS = {"defender", "attacker", "midfielder", "goalkeeper"}
 
-# Sub-position keywords → Qdrant detailed_position codes
+# Sub-position keywords → Qdrant detailed_position codes (SportMonks actual codes)
+# Note: SportMonks has a typo — 'midfield' is stored as 'midfied'
+WINGER_CODES = ["left-wing", "right-wing"]  # winger maps to both
+
 DETAILED_MAP = {
     # Attackers
-    "winger": "winger", "left winger": "winger", "right winger": "winger",
-    "kanat": "winger", "kanat oyuncusu": "winger",
-    "striker": "centre-forward", "centre forward": "centre-forward",
-    "center forward": "centre-forward", "centre-forward": "centre-forward",
-    "forvet": "centre-forward", "santrafor": "centre-forward", "9": "centre-forward",
-    "false nine": "centre-forward", "second striker": "second-striker",
-    # Midfielders
-    "attacking midfielder": "attacking-midfield", "attacking mid": "attacking-midfield",
-    "10": "attacking-midfield", "number 10": "attacking-midfield", "playmaker": "attacking-midfield",
-    "offensive midfielder": "attacking-midfield",
-    "central midfielder": "central-midfield", "box to box": "central-midfield",
-    "defensive midfielder": "defensive-midfield", "holding midfielder": "defensive-midfield",
-    "defensive mid": "defensive-midfield", "6": "defensive-midfield",
-    "kante type": "defensive-midfield", "holder": "defensive-midfield",
-    "orta saha": "central-midfield", "defansif orta saha": "defensive-midfield",
-    "left midfield": "left-midfield", "right midfield": "right-midfield",
+    "winger": "__winger__",        # special: OR(left-wing, right-wing)
+    "left winger": "left-wing",
+    "right winger": "right-wing",
+    "kanat": "__winger__",
+    "kanat oyuncusu": "__winger__",
+    "striker": "centre-forward",
+    "centre forward": "centre-forward",
+    "center forward": "centre-forward",
+    "centre-forward": "centre-forward",
+    "forvet": "centre-forward",
+    "santrafor": "centre-forward",
+    "9": "centre-forward",
+    "false nine": "centre-forward",
+    "second striker": "secondary_striker",
+    # Midfielders (SportMonks stores 'midfied' not 'midfield' — known typo)
+    "attacking midfielder": "attacking-midfied",
+    "attacking mid": "attacking-midfied",
+    "10": "attacking-midfied",
+    "number 10": "attacking-midfied",
+    "playmaker": "attacking-midfied",
+    "offensive midfielder": "attacking-midfied",
+    "central midfielder": "central-midfied",
+    "box to box": "central-midfied",
+    "8": "central-midfied",
+    "defensive midfielder": "defensive-midfied",
+    "holding midfielder": "defensive-midfied",
+    "defensive mid": "defensive-midfied",
+    "6": "defensive-midfied",
+    "kante type": "defensive-midfied",
+    "holder": "defensive-midfied",
+    "orta saha": "central-midfied",
+    "defansif orta saha": "defensive-midfied",
+    "left midfield": "left-midfield",
+    "right midfield": "right-midfield",
     # Defenders
-    "centre-back": "centre-back", "center-back": "centre-back",
-    "central defender": "centre-back", "stoper": "centre-back", "cb": "centre-back",
-    "left-back": "left-back", "left back": "left-back", "sol bek": "left-back",
-    "right-back": "right-back", "right back": "right-back", "sağ bek": "right-back",
-    "full back": "right-back", "full-back": "right-back",
+    "centre-back": "centre-back",
+    "center-back": "centre-back",
+    "central defender": "centre-back",
+    "stoper": "centre-back",
+    "cb": "centre-back",
+    "left-back": "left-back",
+    "left back": "left-back",
+    "sol bek": "left-back",
+    "right-back": "right-back",
+    "right back": "right-back",
+    "sağ bek": "right-back",
+    "full back": "right-back",
+    "full-back": "right-back",
     # Goalkeeper
-    "keeper": "goalkeeper", "kaleci": "goalkeeper", "gk": "goalkeeper",
+    "keeper": "goalkeeper",
+    "kaleci": "goalkeeper",
+    "gk": "goalkeeper",
     "goal keeper": "goalkeeper",
 }
 
 
 def _resolve_position(raw: str) -> tuple[str | None, str | None]:
-    """Returns (broad_position, detailed_position_code)."""
+    """
+    Returns (broad_position, detailed_position_code).
+    '__winger__' is a special value meaning OR(left-wing, right-wing).
+    """
     if not raw:
         return None, None
     lower = raw.lower().strip()
@@ -47,7 +81,7 @@ def _resolve_position(raw: str) -> tuple[str | None, str | None]:
         return None, DETAILED_MAP[lower]
     if lower in BROAD_POSITIONS:
         return lower, None
-    # partial match
+    # partial match on known keywords
     for key, val in DETAILED_MAP.items():
         if key in lower:
             return None, val
@@ -97,16 +131,23 @@ class PlayerFilter(BaseModel):
 # ── Filter builder ────────────────────────────────────────────────────────────
 
 def build_filters(player_filter: PlayerFilter) -> Filter | None:
-    conditions = []
+    must_conditions = []
+    should_conditions = []
 
     if player_filter.position:
         broad, detailed = _resolve_position(player_filter.position)
-        if detailed:
-            conditions.append(
+        if detailed == "__winger__":
+            # OR filter: left-wing or right-wing
+            should_conditions.extend([
+                FieldCondition(key="detailed_position", match=MatchValue(value="left-wing")),
+                FieldCondition(key="detailed_position", match=MatchValue(value="right-wing")),
+            ])
+        elif detailed:
+            must_conditions.append(
                 FieldCondition(key="detailed_position", match=MatchValue(value=detailed))
             )
         elif broad:
-            conditions.append(
+            must_conditions.append(
                 FieldCondition(key="position", match=MatchValue(value=broad))
             )
 
@@ -115,7 +156,7 @@ def build_filters(player_filter: PlayerFilter) -> Filter | None:
         if val:
             num = extract_number(val)
             if num:
-                conditions.append(
+                must_conditions.append(
                     FieldCondition(key="age", range=Range(**{op: num}))
                 )
 
@@ -124,8 +165,15 @@ def build_filters(player_filter: PlayerFilter) -> Filter | None:
         if val:
             num = extract_number(val)
             if num:
-                conditions.append(
+                must_conditions.append(
                     FieldCondition(key="height", range=Range(**{op: num}))
                 )
 
-    return Filter(must=conditions) if conditions else None
+    if not must_conditions and not should_conditions:
+        return None
+
+    return Filter(
+        must=must_conditions if must_conditions else None,
+        should=should_conditions if should_conditions else None,
+        min_should=1 if should_conditions else None,
+    )
