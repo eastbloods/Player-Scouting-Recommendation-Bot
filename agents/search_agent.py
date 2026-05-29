@@ -132,7 +132,7 @@ def search_augmentation(
 
     # Step 3: Semantic retrieval
     try:
-        results = qdrant_retriever(content or "football player", final_filter, top_k=8)
+        results = qdrant_retriever(content or "football player", final_filter, top_k=15)
     except Exception as e:
         print(f"Retriever error: {e}")
         return "Search temporarily unavailable. Please try again."
