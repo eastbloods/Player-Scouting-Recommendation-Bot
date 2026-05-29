@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from qdrant_client.models import Filter, FieldCondition, Range, MatchValue
+from qdrant_client.models import Filter, FieldCondition, Range, MatchValue, MinShould
 import re
 
 # ── Position resolution ──────────────────────────────────────────────────────
@@ -172,8 +172,14 @@ def build_filters(player_filter: PlayerFilter) -> Filter | None:
     if not must_conditions and not should_conditions:
         return None
 
-    return Filter(
-        must=must_conditions if must_conditions else None,
-        should=should_conditions if should_conditions else None,
-        min_should=1 if should_conditions else None,
-    )
+    if should_conditions and must_conditions:
+        # must + OR(should) — use MinShould to enforce at least 1
+        return Filter(
+            must=must_conditions,
+            min_should=MinShould(conditions=should_conditions, min_count=1)
+        )
+    elif should_conditions:
+        # pure OR, no must
+        return Filter(should=should_conditions)
+    else:
+        return Filter(must=must_conditions)

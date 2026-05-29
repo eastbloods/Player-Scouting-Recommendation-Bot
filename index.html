@@ -520,7 +520,7 @@
     /**
      * Parses LLM text into player objects.
      * Expected line format:
-     * **Name** | Age, Club (League) | Position | ★ Rating X.XX | Key: stat1, stat2
+     * Name | Age, Club (League) | Position | ★ Rating X.XX | Key: stat1, stat2
      * → Scout reason text
      */
     function parsePlayers(rawText) {
@@ -529,8 +529,13 @@
       let current = null;
 
       for (const line of lines) {
-        // Player line: contains ** and |
-        if (line.includes('**') && line.includes('|')) {
+        // Player line: contains | and is NOT a reason/arrow line
+        const isPlayerLine = line.includes('|')
+          && !line.startsWith('→')
+          && !line.startsWith('>')
+          && !line.startsWith('No players');
+
+        if (isPlayerLine) {
           if (current) players.push(current);
           current = parsePlayerLine(line);
         }
@@ -541,24 +546,24 @@
       }
       if (current) players.push(current);
 
-      return players.filter(p => p && p.name && p.name !== 'None' && p.name !== 'null');
+      return players.filter(p => p && p.name && p.name.toLowerCase() !== 'none');
     }
 
     function parsePlayerLine(line) {
-      // Strip leading bullet
-      const raw = line.replace(/^[-*]\s+/, '').trim();
+      // Strip leading bullet + strip ** markers (may or may not be present)
+      const raw = line.replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim();
       const parts = raw.split('|').map(p => p.trim());
       if (parts.length < 2) return null;
 
-      const name = parts[0].replace(/\*\*/g, '').trim();
+      const name = parts[0].trim();
       if (!name || name.toLowerCase() === 'none') return null;
 
-      const ageClub = parts[1] || '';          // "26, Panserraikos (Super League)"
-      const posStr  = parts[2] || '';          // "Right-back"
-      const ratingStr = parts[3] || '';        // "★ Rating 6.60"
-      const keyStr  = parts[4] || '';          // "Key: 131/251 duels, 79 crosses"
+      const ageClub  = parts[1] || '';  // "26, Panserraikos (Super League)"
+      const posStr   = parts[2] || '';  // "Right-back" or "defender (centre-back)"
+      const ratingStr= parts[3] || '';  // "★ Rating 6.60" or "★ 6.42" or "N/A"
+      const keyStr   = parts[4] || '';  // "Key: 131/251 duels, 79 crosses"
 
-      // Age
+      // Age (first number)
       const ageMatch = ageClub.match(/^(\d+)/);
       const age = ageMatch ? ageMatch[1] : '';
 
