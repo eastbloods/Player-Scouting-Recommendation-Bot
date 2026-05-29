@@ -5,3 +5,9 @@ __pycache__/
 .idea/
 redis-data
 venv/
+test_ingest.py
+test_search.py
+raw_players_export.json
+raw_players_data.jsonl
+moneyball_dump.sql
+players_snapshot.snapshot
