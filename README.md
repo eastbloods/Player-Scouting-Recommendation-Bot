@@ -219,32 +219,9 @@ curl -X POST http://localhost:8080/search/ \
 └── alembic/                 # Database migrations
 ```
 
----
+## Known Issues
 
-## Key Design Decisions
-
-**Why Qdrant over a traditional database?**
-SQL cannot do semantic similarity search. "Find a player similar to a young creative midfielder" requires vector distance computation — not WHERE clauses.
-
-**Why `all-MiniLM-L6-v2`?**
-Lightweight (22M params, 90MB), runs on CPU, no API cost, 384-dim embeddings with Cosine distance. Fast enough for ~400 players on a t3.small instance.
-
-**Why LangChain for query parsing?**
-The query "find a defender under 25" needs to be converted into structured filters (`position=defender, age<=25`). `with_structured_output()` + Pydantic model makes this reliable.
-
-**Why not a ReAct agent?**
-Groq's Llama 3.3 70B has inconsistent tool-calling behavior. A direct pipeline (LLM → structured output → retriever → LLM) is more predictable and debuggable.
-
-**Why lazy load the embedding model?**
-Loading `all-MiniLM-L6-v2` at startup on a t3.small (2GB RAM) caused OOM during ingestion. A singleton pattern loads the model only on the first request and caches it.
-
----
-
-## Limitations & Known Issues
-
-- Queries in Turkish may produce inconsistent LLM field extraction
-- Height filter only supports `<=` (no `>=` for "taller than")
-- Position normalization is partial ("Winger" → "attacker" mapping incomplete)
+- Queries different than Englisgh may produce inconsistent LLM field extraction
 - No authentication on the API endpoint
 - Qdrant index is rebuilt on each retriever initialization (performance improvement pending)
 
@@ -252,8 +229,8 @@ Loading `all-MiniLM-L6-v2` at startup on a t3.small (2GB RAM) caused OOM during 
 
 ## Author
 
-**Ardas** — Junior AI Data Engineer candidate  
-Building in public. Feedback welcome.
+**eastbloods** —  AI Data Engineer   
+Feedback welcome.
 
 ---
 
