@@ -19,7 +19,7 @@ The system:
 2. Runs a semantic vector search over 400+ player profiles stored in Qdrant
 3. Returns a curated list of real players matching your criteria
 
-No dropdowns. No form fields. Just text.
+No dropdowns. No form fields. Just text for ai search sectyion.
 
 ---
 
@@ -224,13 +224,6 @@ curl -X POST http://localhost:8080/search/ \
 - Queries different than Englisgh may produce inconsistent LLM field extraction
 - No authentication on the API endpoint
 - Qdrant index is rebuilt on each retriever initialization (performance improvement pending)
-
----
-
-## Author
-
-**eastbloods** —  AI Data Engineer   
-Feedback welcome.
 
 ---
 
