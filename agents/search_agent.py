@@ -205,7 +205,7 @@ def _merge_filters(
     from agents.filter_agent import DETAILED_MAP, BROAD_POSITIONS, _resolve_position
 
     must = list((llm_filter.must or []) if llm_filter else [])
-    # Read should conditions from llm_filter (e.g. winger OR filter: left-wing | right-wing)
+    # Read should conditions from llm_filter (e.g. wing OR filter: left-wing | right-wing)
     should = list((llm_filter.should or []) if llm_filter else [])
     # Also pick up min_should conditions if present
     if llm_filter and llm_filter.min_should:
@@ -218,7 +218,7 @@ def _merge_filters(
             hasattr(c, 'key') and c.key in ("position", "detailed_position")
         )]
         broad, detailed = _resolve_position(ui_position)
-        if detailed == "__winger__":
+        if detailed == "__wing__":
             should = [
                 FieldCondition(key="detailed_position", match=MatchValue(value="left-wing")),
                 FieldCondition(key="detailed_position", match=MatchValue(value="right-wing")),

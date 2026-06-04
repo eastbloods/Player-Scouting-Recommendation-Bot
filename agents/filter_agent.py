@@ -9,15 +9,18 @@ BROAD_POSITIONS = {"defender", "attacker", "midfielder", "goalkeeper"}
 
 # Sub-position keywords → Qdrant detailed_position codes (SportMonks actual codes)
 # Note: SportMonks has a typo — 'midfield' is stored as 'midfied'
-WINGER_CODES = ["left-wing", "right-wing"]  # winger maps to both
+WING_CODES = ["left-wing", "right-wing"]  # wing maps to both
 
 DETAILED_MAP = {
     # Attackers
-    "winger": "__winger__",        # special: OR(left-wing, right-wing)
+    "wing": "__wing__",            # special: OR(left-wing, right-wing)
+    "winger": "__wing__",          # alias kept for backward compat
+    "left wing": "left-wing",
+    "right wing": "right-wing",
     "left winger": "left-wing",
     "right winger": "right-wing",
-    "kanat": "__winger__",
-    "kanat oyuncusu": "__winger__",
+    "kanat": "__wing__",
+    "kanat oyuncusu": "__wing__",
     "striker": "centre-forward",
     "centre forward": "centre-forward",
     "center forward": "centre-forward",
@@ -72,7 +75,7 @@ DETAILED_MAP = {
 def _resolve_position(raw: str) -> tuple[str | None, str | None]:
     """
     Returns (broad_position, detailed_position_code).
-    '__winger__' is a special value meaning OR(left-wing, right-wing).
+    '__wing__' is a special value meaning OR(left-wing, right-wing).
     """
     if not raw:
         return None, None
@@ -104,9 +107,9 @@ class PlayerFilter(BaseModel):
         default=None,
         description=(
             "Player position. Can be broad (defender/attacker/midfielder/goalkeeper) "
-            "or specific (winger/striker/centre-back/right-back/defensive midfielder/"
+            "or specific (wing/striker/centre-back/right-back/defensive midfielder/"
             "attacking midfielder/central midfielder/etc.). "
-            "Turkish: forvet/kanat/santrafor → attacker/winger, stoper/bek → defender, "
+            "Turkish: forvet/kanat/santrafor → attacker/wing, stoper/bek → defender, "
             "kaleci → goalkeeper, orta saha → midfielder, defansif → defensive midfielder."
         )
     )
@@ -136,7 +139,7 @@ def build_filters(player_filter: PlayerFilter) -> Filter | None:
 
     if player_filter.position:
         broad, detailed = _resolve_position(player_filter.position)
-        if detailed == "__winger__":
+        if detailed == "__wing__":
             # OR filter: left-wing or right-wing
             should_conditions.extend([
                 FieldCondition(key="detailed_position", match=MatchValue(value="left-wing")),

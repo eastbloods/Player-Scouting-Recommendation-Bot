@@ -5,7 +5,7 @@ from typing import Optional
 class SearchPlayerRequest(BaseModel):
     text: str = ""
     # Hard filters from UI panel (bypass LLM extraction when set)
-    position: Optional[str] = None          # e.g. "winger", "centre-back"
+    position: Optional[str] = None
     min_age: Optional[int] = None
     max_age: Optional[int] = None
     min_height: Optional[int] = None
