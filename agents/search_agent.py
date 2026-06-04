@@ -198,7 +198,10 @@ def _merge_filters(
     from agents.filter_agent import DETAILED_MAP, BROAD_POSITIONS, _resolve_position
 
     must = list((llm_filter.must or []) if llm_filter else [])
-    should = []
+    # Carry over should conditions from LLM filter (e.g. winger → left-wing OR right-wing)
+    should = list((llm_filter.should or []) if llm_filter else [])
+    if llm_filter and llm_filter.min_should:
+        should.extend(llm_filter.min_should.conditions)
 
     # Overwrite position if UI provides one
     if ui_position:
