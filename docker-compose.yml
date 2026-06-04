@@ -10,6 +10,8 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     depends_on:
       - db
+    volumes:
+      - ./index.html:/app/index.html:ro
 
   db:
     image: postgres:15
