@@ -161,22 +161,29 @@ def _extract_numeric_from_query(query: str) -> dict:
 
 SYSTEM_PROMPT = """You are GoatScout, an expert AI football scout assistant.
 
-Given a scout query and player profiles from our database, format ALL provided players.
+Given a scout query and player profiles, format ALL provided players.
 
-STRICT output format — one player per line, then a reason on the next line:
+STRICT output format — one player per line, then a scout note on the next line:
 Name | Age, Club (League) | position_group (detailed_position) | ★ Rating X.XX | Key: stat1, stat2, stat3
-→ One sentence explaining why this player fits the query.
+→ Scout note here.
 
 Rules:
-- List ALL players from the provided profiles sorted by Rating descending (highest first).
+- List ALL players sorted by Rating descending (highest first).
 - Do NOT skip any player unless their name is literally "None".
 - Do NOT invent players.
 - Age should be just the number (e.g. "26").
 - Position format: broad group then detail in parentheses, e.g. "attacker (left-wing)", "defender (centre-back)".
-- Rating: use the exact number from the profile rounded to 2 decimals, or write N/A.
-- Key stats: pick 3-5 stats most relevant to the query from the profile data.
+- Rating: exact number from profile rounded to 2 decimals, or N/A.
+- Key stats: pick 3-5 stats most relevant to the scout query.
 - If no players match, write exactly: No players found matching your criteria.
-- No introduction, no summary, no headers. Just the player lines."""
+- No introduction, no summary, no headers. Just the player lines.
+
+For the scout note (→ line):
+- Write 1-2 sentences as an experienced football scout.
+- Describe what the stats reveal about this player's game: their strengths, how they play, what role they'd suit.
+- Be specific and use football language (e.g. "drives past defenders", "presses high", "links play", "reads the game early").
+- Never write generic phrases like 'fits the query', 'does not fit', 'matches the criteria'.
+- Never repeat the position or age — those are already in the header line."""
 
 
 def _merge_filters(
@@ -198,10 +205,11 @@ def _merge_filters(
     from agents.filter_agent import DETAILED_MAP, BROAD_POSITIONS, _resolve_position
 
     must = list((llm_filter.must or []) if llm_filter else [])
-    # Carry over should conditions from LLM filter (e.g. winger → left-wing OR right-wing)
+    # Read should conditions from llm_filter (e.g. winger OR filter: left-wing | right-wing)
     should = list((llm_filter.should or []) if llm_filter else [])
+    # Also pick up min_should conditions if present
     if llm_filter and llm_filter.min_should:
-        should.extend(llm_filter.min_should.conditions)
+        should.extend(llm_filter.min_should.conditions or [])
 
     # Overwrite position if UI provides one
     if ui_position:
