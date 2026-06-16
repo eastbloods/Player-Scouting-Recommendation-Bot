@@ -297,28 +297,6 @@ Open [http://localhost:8080/docs](http://localhost:8080/docs) for Swagger UI.
 
 ---
 
-## Key Design Decisions
-
-**Why Qdrant over a traditional database?**  
-SQL cannot compute semantic similarity. `WHERE description LIKE '%creative midfielder%'` is keyword matching, not understanding. Qdrant stores 384-dimensional vectors and finds the nearest neighbors in vector space — "what players are semantically similar to this description?"
-
-**Why `all-MiniLM-L6-v2`?**  
-Lightweight (22M params, 90MB), runs entirely on CPU, zero API cost, produces normalized 384-dim vectors. Fast enough for 33,000 players on a t3.small. Changing the model would require re-embedding the entire dataset.
-
-**Why regex-first filter extraction (not LLM-first)?**  
-LLMs are non-deterministic. "Under 25" sometimes becomes `max_age=24`, sometimes `max_age=25`, sometimes nothing. Regex is deterministic: `r'\bunder\s+(\d{2})\b'` always works. LLM handles position semantics where regex falls short.
-
-**Why not a ReAct agent?**  
-Groq's Llama 3.3 70B has inconsistent tool-calling behavior — `BadRequestError: tool_use_failed` appears unpredictably. A direct pipeline (LLM → structured output → retriever) is deterministic, debuggable, and production-safe.
-
-**Why Filtered ANN (pre-filter, not post-filter)?**  
-Post-filter: retrieve top-100 by vector, then filter → if only 3 results pass the filter, you wasted a big search. Pre-filter: apply metadata filter first (`age ≤ 23, position = left-back` → 800 candidates), then do ANN over that subset → better recall, no wasted retrieval.
-
-**Why lazy load the embedding model?**  
-Loading `sentence-transformers` at startup on a t3.small (2GB RAM) caused OOM during container startup. Singleton pattern: model loads on first request, cached for all subsequent requests. Startup stays fast.
-
----
-
 ## Limitations & Roadmap
 
 **Current limitations:**
@@ -334,16 +312,6 @@ Loading `sentence-transformers` at startup on a t3.small (2GB RAM) caused OOM du
 - [ ] Player comparison endpoint: `POST /compare/`
 
 ---
-
-## Author
-
-**Ardas** — Junior AI Data Engineer  
-Building production ML systems. Feedback and contributions welcome.
-
-[LinkedIn](https://linkedin.com) · [GitHub](https://github.com/eastbloods)
-
----
-
 ## License
 
 MIT
