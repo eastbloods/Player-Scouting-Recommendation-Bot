@@ -9,6 +9,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+GROQ_PRIMARY_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_FALLBACK_MODEL = os.getenv("GROQ_FALLBACK_MODEL", "openai/gpt-oss-20b")
+GROQ_MODEL_CHAIN = (GROQ_PRIMARY_MODEL, GROQ_FALLBACK_MODEL)
+
+
+def _get_groq_llm(model_name: str) -> ChatGroq:
+    return ChatGroq(
+        model=model_name,
+        api_key=os.getenv("GROQ_API_KEY"),
+    )
+
+
 # ── Normalization maps ──────────────────────────────────────────────────────
 # Qdrant stores league names exactly as ingested from SportMonks.
 # The UI may send friendly/branded names that don't match exactly.
@@ -291,25 +303,23 @@ def search_augmentation(
     ui_team_country: Optional[str] = None,
     ui_team: Optional[str] = None,
 ) -> str:
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        api_key=os.getenv("GROQ_API_KEY"),
-    )
-
     # Step 1a: Regex-based extraction (reliable, runs always)
     regex_nums = _extract_numeric_from_query(content or "")
     print(f"REGEX FILTERS: {regex_nums}")
 
-    # Step 1b: LLM filter extraction for position (less critical if it fails)
+    # Step 1b: LLM filter extraction for position with model fallback
     llm_filter = None
-    try:
-        filter_llm = llm.with_structured_output(PlayerFilter)
-        player_filter = filter_llm.invoke(
-            f"Extract ONLY position from this query (ignore age/height, those are handled): {content}"
-        )
-        llm_filter = build_filters(player_filter)
-    except Exception as e:
-        print(f"Filter extraction failed: {e} — continuing without LLM filters")
+    for model_name in GROQ_MODEL_CHAIN:
+        try:
+            llm = _get_groq_llm(model_name)
+            filter_llm = llm.with_structured_output(PlayerFilter)
+            player_filter = filter_llm.invoke(
+                f"Extract ONLY position from this query (ignore age/height, those are handled): {content}"
+            )
+            llm_filter = build_filters(player_filter)
+            break
+        except Exception as e:
+            print(f"Filter extraction failed on {model_name}: {e} — trying fallback or continuing")
 
     # Step 2: Merge — regex numbers override LLM, UI overrides everything
     # Apply regex-extracted numbers as fallback when UI doesn't provide them
@@ -347,8 +357,9 @@ def search_augmentation(
     profiles_text = "\n\n".join(condensed)
 
     from langchain_core.messages import SystemMessage, HumanMessage
-    for attempt in range(2):
+    for attempt, model_name in enumerate(GROQ_MODEL_CHAIN):
         try:
+            llm = _get_groq_llm(model_name)
             response = llm.invoke([
                 SystemMessage(content=SYSTEM_PROMPT),
                 HumanMessage(content=(
@@ -361,13 +372,12 @@ def search_augmentation(
             # Accept any non-empty response (don't require |, LLM sometimes uses different separators)
             if result_text and len(result_text) > 30:
                 return result_text
-            print(f"LLM attempt {attempt+1} returned too-short response, retrying...")
+            print(f"LLM attempt {attempt+1} ({model_name}) returned too-short response, retrying...")
         except Exception as e:
-            print(f"LLM formatting error (attempt {attempt+1}): {e}")
+            print(f"LLM formatting error (attempt {attempt+1}, {model_name}): {e}")
 
     # Both attempts failed — build stat-based summaries from raw data
     return _fallback_format(results)
-
 
 
 def _condense_profile(raw: str) -> str:
@@ -484,4 +494,3 @@ def _fallback_format(results: list[str]) -> str:
         )
 
     return '\n'.join(output) if output else "No players found matching your criteria."
-
